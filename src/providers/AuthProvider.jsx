@@ -8,6 +8,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false); // Set initial loading to false
   const axiosSecure = useAxiosSecure(); // Use the configured axios instance
+  const [branch, setbranch] = useState("teaxo");
 
   // Register a new user
   const registerUser = async (email, password, name, branch) => {
@@ -36,7 +37,8 @@ const AuthProvider = ({ children }) => {
         email,
         password,
       });
-      setUser(data.user); // Set user state
+      setUser(data.user);
+      setbranch(data.user.branch) 
       return data.user;
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
@@ -54,9 +56,11 @@ const AuthProvider = ({ children }) => {
   const authInfo = {
     user,
     loading,
+    branch,
     registerUser,
     loginUser,
     logoutUser,
+    
   };
   console.log('Auth Context in AuthProvider:', authInfo);
   return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;
