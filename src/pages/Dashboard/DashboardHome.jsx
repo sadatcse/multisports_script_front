@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   FaShoppingBag,
   FaChartBar,
@@ -23,11 +23,9 @@ const fakeSalesData = Array.from({ length: 30 }, (_, i) => ({
 }));
 
 const DashboardHome = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+
+
 
   return (
     <div className="bg-gray-100 min-h-screen p-4 flex flex-col justify-between">

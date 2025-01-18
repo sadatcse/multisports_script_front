@@ -8,7 +8,6 @@ import {
     MdAccessTime,
     MdCategory,
     MdSettings,
-    MdExitToApp,
     MdPerson,
     MdAddShoppingCart,
     MdCountertops,
@@ -25,17 +24,17 @@ import {
       },
       {
         title: "Collect Order",
-        path: "/collect-order",
+        path: "/dashboard/collect-order",
         icon: <MdShoppingCart className="text-lg" />,
       },
       {
         title: "Pending Orders",
-        path: "/pending-orders",
+        path: "/dashboard/pending-orders",
         icon: <MdPending className="text-lg" />,
       },
       {
         title: "Update Orders History",
-        path: "/update-orders-history",
+        path: "/dashboard/update-orders-history",
         icon: <MdUpdate className="text-lg" />,
       },
       {
@@ -44,47 +43,47 @@ import {
         list: [
           {
             title: "Sales Reports (Daily)",
-            path: "/reports/sales-daily",
+            path: "/dashboard/sales-reports-daily",
             icon: <MdAnalytics className="text-lg" />,
           },
           {
             title: "Delivery Time Report",
-            path: "/reports/delivery-time",
+            path: "/dashboard/delivery-time-report",
             icon: <MdAccessTime className="text-lg" />,
           },
           {
             title: "Materials Used Report",
-            path: "/reports/materials-used",
+            path: "/dashboard/materials-used-report",
             icon: <MdAnalytics className="text-lg" />,
           },
           {
             title: "Fund Report (Daily)",
-            path: "/reports/fund-daily",
+            path: "/dashboard/fund-report-daily",
             icon: <MdAccountBalance className="text-lg" />,
           },
           {
             title: "Product Sales Report",
-            path: "/reports/product-sales",
+            path: "/dashboard/product-sales-report",
             icon: <MdAttachMoney className="text-lg" />,
           },
           {
             title: "Sales Reports (With Addons)",
-            path: "/reports/sales-addons",
+            path: "/dashboard/sales-reports-with-addons",
             icon: <MdAnalytics className="text-lg" />,
           },
           {
             title: "Sales Report (Details)",
-            path: "/reports/sales-details",
+            path: "/dashboard/sales-report-details",
             icon: <MdAnalytics className="text-lg" />,
           },
           {
             title: "Counter Report (Daily)",
-            path: "/reports/counter-daily",
+            path: "/dashboard/counter-report-daily",
             icon: <MdCountertops className="text-lg" />,
           },
           {
             title: "User Access",
-            path: "/reports/user-access",
+            path: "/dashboard/user-access",
             icon: <MdPerson className="text-lg" />,
           },
         ],
@@ -95,39 +94,39 @@ import {
         list: [
           {
             title: "Category",
-            path: "/settings/category",
+            path: "/dashboard/category",
             icon: <MdCategory className="text-lg" />,
           },
           {
             title: "Product",
-            path: "/settings/product",
+            path: "/dashboard/product",
             icon: <MdAddShoppingCart className="text-lg" />,
           },
           {
             title: "Add-ons",
-            path: "/settings/add-ons",
+            path: "/dashboard/add-ons",
             icon: <MdAddShoppingCart className="text-lg" />,
           },
           {
             title: "Counter",
-            path: "/settings/counter",
+            path: "/dashboard/counter",
             icon: <MdCountertops className="text-lg" />,
           },
           {
             title: "VAT/BIN",
-            path: "/settings/vat-bin",
+            path: "/dashboard/vat-bin",
             icon: <MdAccountBalance className="text-lg" />,
           },
           {
             title: "System Settings",
-            path: "/settings/system",
+            path: "/dashboard/system-settings",
             icon: <MdSettings className="text-lg" />,
           },
         ],
       },
       {
         title: "Users",
-        path: "/users",
+        path: "/dashboard/users",
         icon: <MdPerson className="text-lg" />,
       },
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaBars, FaShoppingCart, FaCheckCircle, FaClipboardList, FaUserCircle } from "react-icons/fa";
+import { FaShoppingCart, FaCheckCircle, FaClipboardList, FaUserCircle } from "react-icons/fa";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
