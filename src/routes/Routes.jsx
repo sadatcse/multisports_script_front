@@ -1,10 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import Error404 from './../pages/Error404/Error';
-import Login from './../pages/Login/Login';
+import Error404 from '../pages/Error404/Error';
+import Login from '../pages/Login/Login';
 import Root from "./Root/Root";
 import DRoot from "./Root/DRoot";
-import DashboardHome from './../pages/Dashboard/DashboardHome';
+import DashboardHome from '../pages/Dashboard/DashboardHome';
 
 export const router = createBrowserRouter([
 
@@ -25,7 +25,7 @@ export const router = createBrowserRouter([
     errorElement: <Error404></Error404>,
     children: [
       {
-        path:"dashboard",
+        path:"home",
         element:<DashboardHome/>
       },
 
