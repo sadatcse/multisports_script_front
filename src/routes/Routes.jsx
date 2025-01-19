@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import Error404 from '../pages/Error404/Error';
 import Login from '../pages/Login/Login';
@@ -43,6 +43,10 @@ export const router = createBrowserRouter([
     element: <DRoot />,
     errorElement: <Error404 />,
     children: [
+      {
+        path: "",
+        element: <Navigate to="home" replace />, // Redirects to the home route
+      },
       {
         path: "home",
         element: <DashboardHome />,

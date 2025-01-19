@@ -15,20 +15,26 @@ const Sidebar = ({ isCollapsed }) => {
   const navigate = useNavigate();
   const UserRole = "admin"; // Example UserRole for logic
 
-  const handleLogOut = () => {
-    logoutUser()
-      .then(() => {
-        toast.success("User logged out successfully");
-        navigate("/");
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: "error",
-          title: "Logout Failed",
-          text: "Logout failed. Please try again later.",
-        });
-        console.error(error);
+  const handleLogOut = async () => {
+    try {
+      // Call the logout function from AuthContext
+      await logoutUser();
+      toast.success("User logged out successfully");
+      
+      // Clear local storage (if needed)
+      localStorage.removeItem("authUser");
+      localStorage.removeItem("authBranch");
+
+      // Redirect to the login or home page
+      navigate("/");
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Logout Failed",
+        text: "Logout failed. Please try again later.",
       });
+      console.error(error);
+    }
   };
 
   const handleNavigation = (path) => {
@@ -37,7 +43,6 @@ const Sidebar = ({ isCollapsed }) => {
 
   return (
     <div className="relative mt-8">
- 
       <div
         className={`sidebar border-r border-gray-400 border-dashed h-dvh overflow-auto pl-4 pr-4 pb-4 poppins text-[#737373] ${
           isCollapsed ? "w-[80px]" : "w-[270px]"
