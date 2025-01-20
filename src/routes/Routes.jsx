@@ -24,6 +24,8 @@ import Counter from '../pages/OtherPage/counter';
 import VatBin from '../pages/OtherPage/vat-bin';
 import SystemSettings from '../pages/OtherPage/system-settings';
 import Users from '../pages/OtherPage/users';
+import PrintPreview from "../pages/OtherPage/PrintPreview";
+import Order_history from "../pages/OtherPage/orderhistory";
 
 export const router = createBrowserRouter([
 
@@ -126,6 +128,14 @@ export const router = createBrowserRouter([
       {
         path: "users",
         element: <Users />,
+      },
+      {
+        path: "print-preview",
+        element: <PrintPreview />,
+      },
+      {
+        path: "order-orders",
+        element: <Order_history/>,
       },
     ]
   },

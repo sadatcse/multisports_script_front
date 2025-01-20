@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 import axios from "axios";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { AuthContext } from "../../providers/AuthProvider";
 import Food from "../../assets/Raw-Image/Food.jpg";
 import useCompanyHook from "../../Hook/useCompanyHook";
-
+import ReceiptTemplate from "../../components/Receipt/ReceiptTemplate ";
 const CollectOrder = () => {
   const [categories, setCategories] = useState([]);
   const { user } = useContext(AuthContext);
@@ -25,7 +25,8 @@ const CollectOrder = () => {
 
 
   const { companies, loading, error } = useCompanyHook();
-
+  const receiptRef = useRef();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     axiosSecure
@@ -51,6 +52,10 @@ const CollectOrder = () => {
   }, []);
 
   const roundAmount = (amount) => Math.round(amount);
+
+  const handlePrintComplete = () => {
+    setIsModalOpen(false); // Close modal after printing
+  };
 
   const addProduct = (product) => {
     const existingProduct = addedProducts.find((p) => p._id === product._id);
@@ -109,10 +114,12 @@ const CollectOrder = () => {
   const printInvoice = async (number) => {
     const { subtotal, vat, discount, payable } = calculateTotal();
     const paid = roundAmount(parseFloat(invoiceSummary.paid || 0));
-    const change = paid - payable;
-  
+    const change = roundAmount(paid - payable);
+
+    let data;
+
     const invoiceDetails = {
-      orderType, 
+      orderType,
       products: addedProducts.map((p) => ({
         productName: p.productName,
         qty: p.quantity,
@@ -121,26 +128,32 @@ const CollectOrder = () => {
       })),
       totalQty: addedProducts.reduce((total, p) => total + p.quantity, 0),
       discount: roundAmount(discount),
-      totalAmount: payable,
-      totalSale: payable, 
+      totalAmount: roundAmount(payable),
+      totalSale: roundAmount(payable),
       loginUserEmail,
       loginUserName,
-      counter: "Counter 1", 
-      branch: "teaxo", 
+      counter: "Counter 1",
+      branch: "teaxo",
+      vat:roundAmount(vat),
     };
-  
+
     try {
-      const response = await axiosSecure.post("/invoice/post", invoiceDetails);
-      console.log("Invoice saved successfully:", response.data);
-      setprint(response.data);
+      data = await axiosSecure.post("/invoice/post", invoiceDetails);
+      console.log("Invoice saved successfully:", data.data);
+      setprint(data.data);
     } catch (error) {
       console.error("Error saving invoice:", error);
       alert("Failed to save the invoice. Please try again.");
     }
-    if (number ==2){
-      console.log(companies);
-      console.log(print);
 
+    if (number === 2 && companies[0] && data?.data) {
+      // Show and print the receipt
+      setprint(data.data);
+      setIsModalOpen(true); // Update the state with the saved invoice data
+      if (receiptRef.current) {
+        receiptRef.current.printReceipt(); // Trigger printing
+        
+      }
     }
   };
   
@@ -262,14 +275,15 @@ const CollectOrder = () => {
         <div className="mt-4">
           <table className="w-full border border-gray-300">
             <tbody>
+            <tr>
+                <td className="px-4 py-2 border-b">Sub Total (TK):</td>
+                <td className="px-4 py-2 border-b text-right">{subtotal}</td>
+              </tr>
               <tr>
                 <td className="px-4 py-2 border-b">VAT (TK):</td>
                 <td className="px-4 py-2 border-b text-right">{vat}</td>
               </tr>
-              <tr>
-                <td className="px-4 py-2 border-b">Grand Total (TK):</td>
-                <td className="px-4 py-2 border-b text-right">{subtotal}</td>
-              </tr>
+            
               <tr>
                 <td className="px-4 py-2 border-b">Discount (TK):</td>
                 <td className="px-4 py-2 border-b text-right">
@@ -287,7 +301,7 @@ const CollectOrder = () => {
                 </td>
               </tr>
               <tr>
-                <td className="px-4 py-2 border-b">Payable Amount (TK):</td>
+                <td className="px-4 py-2 border-b">Total Amount (TK):</td>
                 <td className="px-4 py-2 border-b text-right font-bold">
                   {payable}
                 </td>
@@ -330,6 +344,30 @@ const CollectOrder = () => {
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setIsModalOpen(false)} // Close modal when clicking outside
+        >
+          <div
+            className="bg-white p-6 rounded shadow-lg relative w-3/4"
+            onClick={(e) => e.stopPropagation()} // Prevent closing on content click
+          >
+            <button
+              className="absolute top-2 right-2 bg-red-500 text-white rounded px-2 py-1"
+              onClick={() => setIsModalOpen(false)} // Close button
+            >
+              Close
+            </button>
+            <ReceiptTemplate
+              ref={receiptRef}
+              onPrintComplete={handlePrintComplete}
+              profileData={companies[0]} // Company profile
+              invoiceData={print} // Invoice data
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

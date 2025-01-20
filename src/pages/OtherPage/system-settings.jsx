@@ -18,6 +18,7 @@ const CompanySettings = () => {
     logo: "",
     otherInformation: "",
     branch: "",
+    website: "", // New field added
   });
   const [editId, setEditId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,6 +54,7 @@ const CompanySettings = () => {
         logo: "",
         otherInformation: "",
         branch: "",
+        website: "", // Reset website field
       });
       setEditId(null);
     } catch (error) {
@@ -102,81 +104,60 @@ const CompanySettings = () => {
     <div className="p-4 min-h-screen">
       <Mtitle title="Company Management" rightcontent={
         <div className="flex justify-end gap-4">
-   {companies.length !== 1 && (
-  <button
-    onClick={() => setIsModalOpen(true)}
-    className="flex items-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-xl shadow hover:bg-blue-700 transition duration-300"
-  >
-    <GoPlus className="text-xl" /> Add New
-  </button>
-)}
+          {companies.length !== 1 && (
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-xl shadow hover:bg-blue-700 transition duration-300"
+            >
+              <GoPlus className="text-xl" /> Add New
+            </button>
+          )}
         </div>
       } />
 
-<section className="overflow-x-auto border shadow-sm rounded-xl p-4 mt-5">
-  <table className="table w-full">
-    <thead className="bg-blue-600">
-      <tr className="text-sm font-medium text-white text-left">
-        <td className="p-3">Name</td>
-        <td className="p-3">Phone</td>
-        <td className="p-3">Email</td>
-        <td className="p-3">Address</td>
-        <td className="p-3 text-right">Action</td>
-      </tr>
-    </thead>
-    <tbody>
-      {companies.length === 0 ? (
-        <tr>
-          <td colSpan="5" className="text-center py-4">No companies found</td>
-        </tr>
-      ) : companies.length === 1 ? (
-        <tr className="hover:bg-slate-100">
-          <td className="p-3">{companies[0].name}</td>
-          <td className="p-3">{companies[0].phone}</td>
-          <td className="p-3">{companies[0].email}</td>
-          <td className="p-3">{companies[0].address}</td>
-          <td className="p-3 text-right flex justify-end gap-4">
-            <button
-              onClick={() => handleEdit(companies[0]._id)}
-              className="text-blue-500 hover:text-yellow-700 transition duration-150"
-            >
-              <FiEdit />
-            </button>
-            <button
-              onClick={() => handleRemove(companies[0]._id)}
-              className="text-red-500 hover:text-red-700 transition duration-150"
-            >
-              <FiTrash2 />
-            </button>
-          </td>
-        </tr>
-      ) : (
-        companies.map((company, index) => (
-          <tr key={index} className="hover:bg-slate-100">
-            <td className="p-3">{company.name}</td>
-            <td className="p-3">{company.phone}</td>
-            <td className="p-3">{company.email}</td>
-            <td className="p-3">{company.address}</td>
-            <td className="p-3 text-right flex justify-end gap-4">
-              <button
-                onClick={() => handleEdit(company._id)}
-                className="text-blue-500 hover:text-yellow-700 transition duration-150"
-              >
-                <FiEdit />
-              </button>
-              <button
-                onClick={() => handleRemove(company._id)}
-                className="text-red-500 hover:text-red-700 transition duration-150"
-              >
-                <FiTrash2 />
-              </button>
-            </td>
-          </tr>
-        ))
-      )}
-    </tbody>
-  </table>
-</section>
+      <section className="overflow-x-auto border shadow-sm rounded-xl p-4 mt-5">
+        <table className="table w-full">
+          <thead className="bg-blue-600">
+            <tr className="text-sm font-medium text-white text-left">
+              <td className="p-3">Name</td>
+              <td className="p-3">Phone</td>
+              <td className="p-3">Email</td>
+              <td className="p-3">Address</td>
+              <td className="p-3">Website</td> {/* New column */}
+              <td className="p-3 text-right">Action</td>
+            </tr>
+          </thead>
+          <tbody>
+            {companies.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="text-center py-4">No companies found</td>
+              </tr>
+            ) : companies.map((company, index) => (
+              <tr key={index} className="hover:bg-slate-100">
+                <td className="p-3">{company.name}</td>
+                <td className="p-3">{company.phone}</td>
+                <td className="p-3">{company.email}</td>
+                <td className="p-3">{company.address}</td>
+                <td className="p-3">{company.website || "N/A"}</td> {/* Display website */}
+                <td className="p-3 text-right flex justify-end gap-4">
+                  <button
+                    onClick={() => handleEdit(company._id)}
+                    className="text-blue-500 hover:text-yellow-700 transition duration-150"
+                  >
+                    <FiEdit />
+                  </button>
+                  <button
+                    onClick={() => handleRemove(company._id)}
+                    className="text-red-500 hover:text-red-700 transition duration-150"
+                  >
+                    <FiTrash2 />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -224,6 +205,13 @@ const CompanySettings = () => {
               className="w-full border rounded px-3 py-2 mb-4"
               placeholder="Branch"
             />
+            <input
+              type="url"
+              value={formData.website}
+              onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+              className="w-full border rounded px-3 py-2 mb-4"
+              placeholder="Website URL"
+            />
             <div className="flex justify-end gap-4">
               <button
                 onClick={() => {
@@ -236,6 +224,7 @@ const CompanySettings = () => {
                     logo: "",
                     otherInformation: "",
                     branch: "",
+                    website: "", // Reset website field
                   });
                   setEditId(null);
                 }}

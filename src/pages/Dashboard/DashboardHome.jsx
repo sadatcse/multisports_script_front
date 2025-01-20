@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaShoppingBag,
   FaChartBar,
@@ -15,17 +15,46 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import moment from "moment";
-
-// Fake Sales Data
-const fakeSalesData = Array.from({ length: 30 }, (_, i) => ({
-  date: `Day ${i + 1}`,
-  sales: Math.floor(Math.random() * 1000) + 100,
-}));
+import axios from "axios";
+import UseAxiosSecure from "../../Hook/UseAxioSecure";
 
 const DashboardHome = () => {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const axiosSecure = UseAxiosSecure();
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await axiosSecure.get("/invoice/teaxo/dashboard");
+        setDashboardData(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+        setError("Failed to fetch data. Please try again.");
+        setLoading(false);
+      }
+    };
 
+    fetchDashboardData();
+  }, []);
 
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading dashboard...</div>;
+  }
 
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+
+  const {
+    todaysTotalSale,
+    yesterdaysTotalSale,
+    todaysTotalItems,
+    dailySales,
+    thisMonthName,
+    todaysPendingOrders,
+  } = dashboardData;
 
   return (
     <div className="bg-gray-100 min-h-screen p-4 flex flex-col justify-between">
@@ -42,7 +71,7 @@ const DashboardHome = () => {
         <div className="bg-blue-500 rounded-lg shadow-lg p-4 text-white flex flex-col justify-between">
           <div className="flex justify-between items-center">
             <FaShoppingBag className="text-3xl" />
-            <h2 className="text-3xl font-bold">0</h2>
+            <h2 className="text-3xl font-bold">{todaysPendingOrders}</h2> 
           </div>
           <h3 className="text-lg mt-3">Pending Orders</h3>
         </div>
@@ -51,7 +80,7 @@ const DashboardHome = () => {
         <div className="bg-green-500 rounded-lg shadow-lg p-4 text-white flex flex-col justify-between">
           <div className="flex justify-between items-center">
             <FaChartBar className="text-3xl" />
-            <h2 className="text-3xl font-bold">$2,450</h2>
+            <h2 className="text-3xl font-bold">{todaysTotalSale} TK</h2>
           </div>
           <h3 className="text-lg mt-3">Total Sale (Today)</h3>
         </div>
@@ -60,7 +89,7 @@ const DashboardHome = () => {
         <div className="bg-yellow-500 rounded-lg shadow-lg p-4 text-white flex flex-col justify-between">
           <div className="flex justify-between items-center">
             <FaDollarSign className="text-3xl" />
-            <h2 className="text-3xl font-bold">$1,980</h2>
+            <h2 className="text-3xl font-bold">{yesterdaysTotalSale} TK</h2>
           </div>
           <h3 className="text-lg mt-3">Yesterday Sale</h3>
         </div>
@@ -69,9 +98,11 @@ const DashboardHome = () => {
         <div className="bg-red-500 rounded-lg shadow-lg p-4 text-white flex flex-col justify-between">
           <div className="flex justify-between items-center">
             <FaBoxes className="text-3xl" />
-            <h2 className="text-3xl font-bold">$65,430</h2>
+            <h2 className="text-3xl font-bold">
+              {dailySales.reduce((total, day) => total + day.totalSale, 0)} TK
+            </h2>
           </div>
-          <h3 className="text-lg mt-3">Total Monthly Sale</h3>
+          <h3 className="text-lg mt-3">Total Sale ({thisMonthName})</h3>
         </div>
       </div>
 
@@ -82,7 +113,10 @@ const DashboardHome = () => {
         </h2>
         <ResponsiveContainer width="100%" height={250}>
           <LineChart
-            data={fakeSalesData}
+            data={dailySales.map((day) => ({
+              date: moment(day.date).format("MMM DD"),
+              sales: day.totalSale,
+            }))}
             margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
@@ -101,21 +135,24 @@ const DashboardHome = () => {
 
       {/* Footer */}
       <footer className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 text-center p-6 mt-auto rounded-lg shadow-lg">
-  <p className="text-sm text-gray-700 font-medium">
-    &copy; {moment().format("YYYY")} <span className="font-semibold">Teaxo POS Version 1.00</span>. Designed and Developed by 
-    <a 
-      href="https://www.sadatkhan.com" 
-      target="_blank" 
-      rel="noopener noreferrer" 
-      className="text-blue-500 hover:text-blue-700 underline transition duration-300">
-      Sadat Khan
-    </a>.
-  </p>
-  <div className="mt-2 text-xs text-gray-500">
-    <p>All rights reserved. Empowering businesses with modern solutions.</p>
-  </div>
-</footer>
-
+        <p className="text-sm text-gray-700 font-medium">
+          &copy; {moment().format("YYYY")}{" "}
+          <span className="font-semibold">Teaxo POS Version 1.00</span>. Designed
+          and Developed by
+          <a
+            href="https://www.sadatkhan.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:text-blue-700 underline transition duration-300"
+          >
+            Sadat Khan
+          </a>
+          .
+        </p>
+        <div className="mt-2 text-xs text-gray-500">
+          <p>All rights reserved. Empowering businesses with modern solutions.</p>
+        </div>
+      </footer>
     </div>
   );
 };

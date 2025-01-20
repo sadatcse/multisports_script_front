@@ -9,13 +9,14 @@ import { AuthContext } from "../providers/AuthProvider";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import person from "../assets/Raw-Image/Person.jpg";
+import UseAxiosSecure from "../Hook/UseAxioSecure";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const { user } = useContext(AuthContext);
-
+  const axiosSecure = UseAxiosSecure();
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -24,8 +25,8 @@ const Header = () => {
     setIsModalOpen(true);
 
     // Fetch product data from the backend
-    axios
-      .get("http://localhost:8000/api/products") // Replace with your API endpoint
+    axiosSecure
+      .get("/invoice/teaxo/item") // Updated API endpoint
       .then((response) => {
         setProducts(response.data);
       })
@@ -44,7 +45,7 @@ const Header = () => {
       <div className="flex items-center gap-4">
         <h1 className="text-xl font-bold flex items-center gap-2">
           <FaClipboardList />
-          <span>COUNTER {user?.counter || "N/A"}</span>
+          <span>COUNTER {user?.counter || "1"}</span>
         </h1>
       </div>
 
@@ -110,43 +111,45 @@ const Header = () => {
 
       {/* Modal for Sell Product */}
       {isModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-    <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl relative p-6">
+  <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center animate-fadeIn">
+    <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl relative p-8 border border-gray-200">
       {/* Close Button */}
       <button
         onClick={closeModal}
-        className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-xl"
+        className="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl focus:outline-none transition duration-200"
+        aria-label="Close modal"
       >
         ✖
       </button>
 
       {/* Modal Header */}
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Sell Product</h2>
-        <p className="text-sm text-gray-500">
-          Manage product sales by reviewing available stock and quantities.
+        <h2 className="text-3xl font-semibold text-gray-800">Today's Sell Product</h2>
+        <p className="text-sm text-gray-500 mt-2">
+          Review product sales and check quantities .
         </p>
       </div>
 
       {/* Product Table */}
       <div className="overflow-auto max-h-80">
-        <table className="min-w-full text-left border border-gray-300">
+        <table className="min-w-full text-left border-collapse border border-gray-300">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="py-2 px-4 border-b">Product Name</th>
-              <th className="py-2 px-4 border-b">Quantity</th>
-              <th className="py-2 px-4 border-b">Action</th>
+            <tr className="bg-gray-100 text-gray-600 text-sm uppercase">
+              <th className="py-3 px-5 border-b border-gray-300">Product Name</th>
+              <th className="py-3 px-5 border-b border-gray-300">Quantity</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50">
-                <td className="py-2 px-4 border-b">{product.name}</td>
-                <td className="py-2 px-4 border-b">{product.quantity}</td>
-                <td className="py-2 px-4 border-b">
-                  <button className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    Sell
-                  </button>
+            {products.map((product, index) => (
+              <tr
+                key={index}
+                className="hover:bg-gray-50 transition duration-150"
+              >
+                <td className="py-3 px-5 border-b border-gray-300 text-gray-700">
+                  {product.productName}
+                </td>
+                <td className="py-3 px-5 border-b border-gray-300 text-gray-700">
+                  {product.qty}
                 </td>
               </tr>
             ))}
@@ -155,15 +158,12 @@ const Header = () => {
       </div>
 
       {/* Footer */}
-      <div className="mt-6 flex justify-end gap-4">
+      <div className="mt-8 flex justify-end gap-4">
         <button
           onClick={closeModal}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+          className="px-5 py-3 bg-red-500 text-white font-semibold rounded-lg shadow hover:bg-red-600 transition duration-200 focus:outline-none focus:ring-2 focus:ring-red-300"
         >
-          Cancel
-        </button>
-        <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-          Confirm Sale
+          Close Now
         </button>
       </div>
     </div>

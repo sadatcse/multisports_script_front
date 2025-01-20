@@ -13,6 +13,7 @@ import {
     MdCountertops,
     MdAccountBalance,
     MdAttachMoney,
+    MdHistory,
   } from "react-icons/md";
   
   const menuItems = () => {
@@ -33,9 +34,14 @@ import {
         icon: <MdPending className="text-lg" />,
       },
       {
-        title: "Update Orders History",
+        title: "Finished Order",
         path: "/dashboard/update-orders-history",
         icon: <MdUpdate className="text-lg" />,
+      },
+      {
+        title: "Order History",
+        path: "/dashboard/order-orders",
+        icon: <MdHistory className="text-lg" />,
       },
       {
         title: "Reports",
