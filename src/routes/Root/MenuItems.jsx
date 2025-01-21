@@ -52,35 +52,11 @@ import {
             path: "/dashboard/sales-reports-daily",
             icon: <MdAnalytics className="text-lg" />,
           },
-          {
-            title: "Delivery Time Report",
-            path: "/dashboard/delivery-time-report",
-            icon: <MdAccessTime className="text-lg" />,
-          },
-          {
-            title: "Materials Used Report",
-            path: "/dashboard/materials-used-report",
-            icon: <MdAnalytics className="text-lg" />,
-          },
-          {
-            title: "Fund Report (Daily)",
-            path: "/dashboard/fund-report-daily",
-            icon: <MdAccountBalance className="text-lg" />,
-          },
+
           {
             title: "Product Sales Report",
             path: "/dashboard/product-sales-report",
             icon: <MdAttachMoney className="text-lg" />,
-          },
-          {
-            title: "Sales Reports (With Addons)",
-            path: "/dashboard/sales-reports-with-addons",
-            icon: <MdAnalytics className="text-lg" />,
-          },
-          {
-            title: "Sales Report (Details)",
-            path: "/dashboard/sales-report-details",
-            icon: <MdAnalytics className="text-lg" />,
           },
           {
             title: "Counter Report (Daily)",

@@ -6,8 +6,9 @@ import { AuthContext } from "../../providers/AuthProvider";
 import Food from "../../assets/Raw-Image/Food.jpg";
 import useCompanyHook from "../../Hook/useCompanyHook";
 import ReceiptTemplate from "../../components/Receipt/ReceiptTemplate ";
+import CategroieHook from "../../Hook/Categroie";
 const CollectOrder = () => {
-  const [categories, setCategories] = useState([]);
+
   const { user } = useContext(AuthContext);
   const loginUserEmail = user?.email || "info@teaxo.com.bd";
   const loginUserName = user?.name || "Teaxo";
@@ -27,7 +28,7 @@ const CollectOrder = () => {
   const { companies, loading, error } = useCompanyHook();
   const receiptRef = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { categories } = CategroieHook();
   useEffect(() => {
     axiosSecure
       .get("/product/")
@@ -40,7 +41,6 @@ const CollectOrder = () => {
         const uniqueCategories = [
           ...new Set(availableProducts.map((p) => p.category)),
         ];
-        setCategories(uniqueCategories);
         setProducts(availableProducts);
         if (uniqueCategories.length > 0) {
           setSelectedCategory(uniqueCategories[0]);

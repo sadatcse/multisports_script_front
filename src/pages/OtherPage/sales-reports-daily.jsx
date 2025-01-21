@@ -7,7 +7,7 @@ import UseAxiosSecure from "../../Hook/UseAxioSecure";
 
 const SalesReportsDaily = () => {
   const [fromDate, setFromDate] = useState(new Date());
-  const [toDate, setToDate] = useState(moment().add(1, "days").toDate());
+  const [toDate, setToDate] = useState(new Date());
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

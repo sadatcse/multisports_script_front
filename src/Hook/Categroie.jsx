@@ -5,6 +5,7 @@ import UseAxiosSecure from "./UseAxioSecure";
 
 const CategroieHook = () => {
   const [categories, setCategories] = useState([]);
+  const [categoryNames, setCategoryNames] = useState([]);
   const axiosSecure = UseAxiosSecure();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,7 +15,9 @@ console.log(categories);
     const fetchActiveCategories = async () => {
       try {
         const response = await axiosSecure.get(`/category/${branch}/active`);
-        setCategories(response.data);
+        const names = response.data.map((category) => category.categoryName);
+        setCategoryNames(response.data);
+        setCategories(names);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -27,7 +30,7 @@ console.log(categories);
     }
   }, [branch]);
 
-  return { categories, loading, error };
+  return { categoryNames,categories, loading, error };
 };
 
 export default CategroieHook;

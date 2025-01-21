@@ -12,7 +12,7 @@ import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { AuthContext } from "../../providers/AuthProvider";
 
 const Product = () => {
-  const { categories, loading: categoriesLoading, error: categoriesError } = CategroieHook();
+  const { categoryNames, loading: categoriesLoading, error: categoriesError } = CategroieHook();
   const axiosSecure = UseAxiosSecure();
    const { branch } = useContext(AuthContext);
   const [products, setProducts] = useState([]);
@@ -259,7 +259,7 @@ const Product = () => {
               ) : categoriesError ? (
                 <option disabled>Error loading categories</option>
               ) : (
-                categories.map((category) => (
+                categoryNames.map((category) => (
                   <option key={category._id} value={category.categoryName}>
                     {category.categoryName}
                   </option>

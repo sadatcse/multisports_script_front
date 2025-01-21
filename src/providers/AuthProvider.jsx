@@ -41,15 +41,12 @@ const AuthProvider = ({ children }) => {
   const loginUser = async (email, password) => {
     setLoading(true);
     try {
-      const { data } = await axiosSecure.post("/user/login", {
-        email,
-        password,
-      });
+      const { data } = await axiosSecure.post("/user/login", { email, password });
       setUser(data.user);
       setBranch(data.user.branch);
-      // Save user and branch in localStorage
       localStorage.setItem("authUser", JSON.stringify(data.user));
       localStorage.setItem("authBranch", data.user.branch);
+      localStorage.setItem("authToken", data.token); // Store token
       return data.user;
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
@@ -60,24 +57,22 @@ const AuthProvider = ({ children }) => {
   };
 
   // Log out the user
-  const logoutUser = () => {
-    setUser(null); // Reset user state
-    setBranch("teaxo"); // Reset branch state
-    localStorage.removeItem("authUser"); // Clear user from localStorage
-    localStorage.removeItem("authBranch"); // Clear branch from localStorage
+  const logoutUser = async () => {
+    setLoading(true);
+    try {
+      // Notify the backend about the logout
+      await axiosSecure.post("/user/logout", { email: user.email });
+      setUser(null);
+      setBranch("teaxo");
+      localStorage.removeItem("authUser");
+      localStorage.removeItem("authBranch");
+      localStorage.removeItem("authToken"); // Clear token
+    } catch (error) {
+      console.error("Logout error:", error.response?.data || error.message);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  // Use effect to keep user and branch state in sync with localStorage
-  useEffect(() => {
-    const storedUser = localStorage.getItem("authUser");
-    const storedBranch = localStorage.getItem("authBranch");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    if (storedBranch) {
-      setBranch(storedBranch);
-    }
-  }, []);
 
   const authInfo = {
     user,
