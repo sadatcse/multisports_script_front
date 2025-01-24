@@ -25,15 +25,29 @@ const Category = () => {
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const LOCAL_STORAGE_KEY = `categories_${branch}`;
+
+  const clearLocalStorage = () => {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+  };
+
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchCategories = async () => {
     try {
+      clearLocalStorage();
       const response = await axiosSecure.get(`/category/`);
+      const filteredData = response.data.filter(
+        (category) => category.branch === branch && category.isActive === true
+      );
       setCategories(response.data);
       setFilteredCategories(response.data);
+      localStorage.setItem(
+        LOCAL_STORAGE_KEY,
+        JSON.stringify({ data: filteredData, timestamp: Date.now() })
+      );
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -49,8 +63,10 @@ const Category = () => {
         // Add new category
         await axiosSecure.post('/category/post', formData);
       }
+      
       fetchCategories();
       setIsModalOpen(false);
+
       setFormData({
         categoryName: "",
         serial: "",
@@ -90,6 +106,7 @@ const Category = () => {
       if (result.isConfirmed) {
         axiosSecure.delete(`/category/delete/${id}`)
           .then(() => {
+         
             fetchCategories();
             Swal.fire('Deleted!', 'The category has been deleted.', 'success');
           })

@@ -6,7 +6,7 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import { AuthContext } from "../providers/AuthProvider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import person from "../assets/Raw-Image/Person.jpg";
 import UseAxiosSecure from "../Hook/UseAxioSecure";
@@ -15,7 +15,8 @@ const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
-  const { user } = useContext(AuthContext);
+  const navigate = useNavigate(); 
+  const { user, logoutUser  } = useContext(AuthContext);
   const axiosSecure = UseAxiosSecure();
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -37,6 +38,15 @@ const Header = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logoutUser(); // Call the logout function
+      navigate("/"); // Redirect to login page
+    } catch (error) {
+      console.error("Error during sign out:", error);
+    }
   };
 
   return (
@@ -98,10 +108,13 @@ const Header = () => {
             </div>
             {/* Dropdown Links */}
             <div className="flex flex-col text-sm">
-              <button className="py-2 px-4 hover:bg-blue-100 text-left">
+              {/* <button className="py-2 px-4 hover:bg-blue-100 text-left">
                 Profile
-              </button>
-              <button className="py-2 px-4 hover:bg-blue-100 text-left text-red-600">
+              </button> */}
+               <button
+                onClick={handleSignOut} // Call handleSignOut on click
+                className="py-2 px-4 hover:bg-blue-100 text-left text-red-600"
+              >
                 Sign Out
               </button>
             </div>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
-import axios from "axios";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { AuthContext } from "../../providers/AuthProvider";
 import Food from "../../assets/Raw-Image/Food.jpg";
 import useCompanyHook from "../../Hook/useCompanyHook";
 import ReceiptTemplate from "../../components/Receipt/ReceiptTemplate ";
 import CategroieHook from "../../Hook/Categroie";
+import CookingAnimation from "../../components/CookingAnimation";
 const CollectOrder = () => {
 
   const { user } = useContext(AuthContext);
@@ -25,10 +25,13 @@ const CollectOrder = () => {
   });
 
 
-  const { companies, loading, error } = useCompanyHook();
+
+  const { companies } = useCompanyHook();
   const receiptRef = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { categories } = CategroieHook();
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     axiosSecure
       .get("/product/")
@@ -45,7 +48,9 @@ const CollectOrder = () => {
         if (uniqueCategories.length > 0) {
           setSelectedCategory(uniqueCategories[0]);
         }
+        setLoading(false);
       })
+      
       .catch((error) => {
         console.error("Error fetching products:", error);
       });
@@ -86,6 +91,11 @@ const CollectOrder = () => {
           : p
       )
     );
+  };
+
+  const resetOrder = () => {
+    setAddedProducts([]);
+    setInvoiceSummary({ vat: 0, discount: 0, paid: 0 });
   };
 
   const removeProduct = (id) => {
@@ -155,6 +165,7 @@ const CollectOrder = () => {
         
       }
     }
+    resetOrder();
   };
   
 
@@ -164,7 +175,11 @@ const CollectOrder = () => {
 
   return (
     <div className="flex p-4 gap-4">
-      <div className="w-3/5">
+       {loading ? (
+    <CookingAnimation />
+  ) : (
+
+ <div className="w-3/5">
         {/* Categories */}
         <div className="flex flex-wrap gap-2 mb-4 border p-2 rounded shadow">
           {categories.map((category) => (
@@ -183,31 +198,51 @@ const CollectOrder = () => {
         </div>
 
         {/* Products */}
-        <div className="grid grid-cols-2 gap-4">
-          {products
-            .filter((product) => product.category === selectedCategory)
-            .map((product) => (
-              <div
-                key={product._id}
-                className="border p-4 rounded shadow hover:shadow-lg"
-              >
+        <div className="overflow-x-auto">
+
+    <table className="table-auto w-full border-collapse">
+      <thead>
+        <tr className="bg-blue-500">
+          <th className="border px-4 py-2">Picture</th>
+          <th className="border px-4 py-2">Product</th>
+          <th className="border px-4 py-2">Rate</th>
+          <th className="border px-4 py-2">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {products
+          .filter((product) => product.category === selectedCategory)
+          .map((product) => (
+            <tr key={product._id}>
+              <td className="border px-4 py-2">
                 <img
                   src={product.photo ? product.photo : Food}
                   alt={product.productName || "Food item"}
-                  className="h-32 w-full object-cover rounded mb-2"
+                  className="h-16 w-16 object-cover rounded"
                 />
-                <h3 className="font-bold">{product.productName}</h3>
-                <p>{product.price} TK</p>
+              </td>
+              <td className="border px-4 py-2">{product.productName}</td>
+
+              <td className="border px-4 py-2">{product.price} TK</td>
+              <td className="border px-4 py-2">
                 <button
                   onClick={() => addProduct(product)}
-                  className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
                   Add
                 </button>
-              </div>
-            ))}
-        </div>
+              </td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+
+</div>
+
       </div>
+
+
+  )}
 
       <div className="w-2/5 border p-4 rounded shadow">
         {/* Order Type Selector */}

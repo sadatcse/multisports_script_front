@@ -17,6 +17,7 @@ import {
 import moment from "moment";
 import axios from "axios";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
+import CookingAnimation from './../../components/CookingAnimation';
 
 const DashboardHome = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -40,7 +41,7 @@ const DashboardHome = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading dashboard...</div>;
+    return <CookingAnimation />;
   }
 
   if (error) {

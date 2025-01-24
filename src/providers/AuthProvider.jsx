@@ -56,6 +56,18 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const changePassword = async (oldPassword, newPassword) => {
+    setLoading(true);
+    try {
+      const { data } = await axiosSecure.put("/user/change-password", { oldPassword, newPassword });
+      return data; // Successfully changed password
+    } catch (error) {
+      console.error("Change password error:", error.response?.data || error.message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
   // Log out the user
   const logoutUser = async () => {
     setLoading(true);
@@ -81,6 +93,7 @@ const AuthProvider = ({ children }) => {
     registerUser,
     loginUser,
     logoutUser,
+    changePassword,
   };
 
   console.log("Auth Context in AuthProvider:", authInfo);

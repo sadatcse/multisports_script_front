@@ -4,15 +4,16 @@ import { FaLock, FaEnvelope } from "react-icons/fa";
 import Swal from "sweetalert2";
 import backgroundImage from "../../assets/Background/Login.jpg";
 import Logo from "../../assets/Logo/logo.png";
-import useAuth from "../../Hook/useAuth"; // Custom hook for authentication
+import useAuth from "../../Hook/useAuth"; 
 import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false); 
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false); // State for "Remember Me"
+  const [rememberMe, setRememberMe] = useState(false); 
   const navigate = useNavigate();
-  const { loginUser } = useAuth(); // Destructure the loginUser function
+  const { loginUser } = useAuth(); 
 
   // Load saved credentials from local storage on mount
   useEffect(() => {
@@ -28,7 +29,17 @@ const Login = () => {
 
   // Handle login submission
   const handleLogin = async (e) => {
+    if (password.length < 6) {
+      Swal.fire({
+        title: "Password Too Short!",
+        text: "Password must be at least 6 characters long.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return; 
+    }
     e.preventDefault();
+    setLoading(true);
     try {
       // Call the loginUser function with email and password
       await loginUser(email, password);
@@ -41,7 +52,7 @@ const Login = () => {
         localStorage.removeItem("email");
         localStorage.removeItem("password");
       }
-
+      setLoading(false);
       toast.success(`Login Successful! Welcome back!`, {
         position: "top-right",
         autoClose: 3000,
@@ -52,11 +63,10 @@ const Login = () => {
         progress: undefined,
       });
 
-      navigate("/dashboard"); // Redirect to dashboard
+      navigate("/dashboard"); 
     } catch (error) {
-      console.error("Login failed:", error.response?.data || error.message);
 
-      // Show error alert
+      setLoading(false);
       Swal.fire({
         title: "Login Failed!",
         text: "Invalid email or password. Please try again.",
@@ -135,9 +145,14 @@ const Login = () => {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition text-sm md:text-base"
+            disabled={loading} 
+            className={`w-full py-2 rounded-lg text-sm md:text-base transition ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600 text-white"
+            }`}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>

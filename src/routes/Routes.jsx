@@ -1,34 +1,34 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
-import Error404 from '../pages/Error404/Error';
-import Login from '../pages/Login/Login';
+import Error404 from "../pages/Error404/Error";
+import Login from "../pages/Login/Login";
 import Root from "./Root/Root";
 import DRoot from "./Root/DRoot";
-import DashboardHome from '../pages/Dashboard/DashboardHome';
-import CollectOrder from '../pages/OtherPage/collect-order';
-import PendingOrders from '../pages/OtherPage/pending-orders';
-import UpdateOrdersHistory from '../pages/OtherPage/update-orders-history';
-import SalesReportsDaily from '../pages/OtherPage/sales-reports-daily';
-import DeliveryTimeReport from '../pages/OtherPage/delivery-time-report';
-import MaterialsUsedReport from '../pages/OtherPage/materials-used-report';
-import FundReportDaily from '../pages/OtherPage/fund-report-daily';
-import ProductSalesReport from '../pages/OtherPage/product-sales-report';
-import SalesReportsWithAddons from '../pages/OtherPage/sales-reports-with-addons';
-import SalesReportDetails from '../pages/OtherPage/sales-report-details';
-import CounterReportDaily from '../pages/OtherPage/counter-report-daily';
-import UserAccess from '../pages/OtherPage/user-access';
-import Category from '../pages/OtherPage/category';
-import Product from '../pages/OtherPage/product';
-import AddOns from '../pages/OtherPage/add-ons';
-import Counter from '../pages/OtherPage/counter';
-import VatBin from '../pages/OtherPage/vat-bin';
-import SystemSettings from '../pages/OtherPage/system-settings';
-import Users from '../pages/OtherPage/users';
+import DashboardHome from "../pages/Dashboard/DashboardHome";
+import CollectOrder from "../pages/OtherPage/collect-order";
+import PendingOrders from "../pages/OtherPage/pending-orders";
+import UpdateOrdersHistory from "../pages/OtherPage/update-orders-history";
+import SalesReportsDaily from "../pages/OtherPage/sales-reports-daily";
+import DeliveryTimeReport from "../pages/OtherPage/delivery-time-report";
+import MaterialsUsedReport from "../pages/OtherPage/materials-used-report";
+import FundReportDaily from "../pages/OtherPage/fund-report-daily";
+import ProductSalesReport from "../pages/OtherPage/product-sales-report";
+import SalesReportsWithAddons from "../pages/OtherPage/sales-reports-with-addons";
+import SalesReportDetails from "../pages/OtherPage/sales-report-details";
+import CounterReportDaily from "../pages/OtherPage/counter-report-daily";
+import UserAccess from "../pages/OtherPage/user-access";
+import Category from "../pages/OtherPage/category";
+import Product from "../pages/OtherPage/product";
+import AddOns from "../pages/OtherPage/add-ons";
+import Counter from "../pages/OtherPage/counter";
+import VatBin from "../pages/OtherPage/vat-bin";
+import SystemSettings from "../pages/OtherPage/system-settings";
+import Users from "../pages/OtherPage/users";
 import PrintPreview from "../pages/OtherPage/PrintPreview";
-import Order_history from "../pages/OtherPage/orderhistory";
+import OrderHistory from "../pages/OtherPage/orderhistory";
+import PrivateRoot from "./Root/PrivateRoot";
 
 export const router = createBrowserRouter([
-
   {
     path: "/",
     element: <Root />,
@@ -38,7 +38,7 @@ export const router = createBrowserRouter([
         path: "/",
         element: <Login />,
       },
-    ]
+    ],
   },
   {
     path: "dashboard",
@@ -47,97 +47,188 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <Navigate to="home" replace />, // Redirects to the home route
+        element: (
+          <PrivateRoot>
+            <Navigate to="home" replace />
+          </PrivateRoot>
+        ),
       },
       {
         path: "home",
-        element: <DashboardHome />,
+        element: (
+          <PrivateRoot>
+            <DashboardHome />
+          </PrivateRoot>
+        ),
       },
       {
         path: "collect-order",
-        element: <CollectOrder />,
+        element: (
+          <PrivateRoot>
+            <CollectOrder />
+          </PrivateRoot>
+        ),
       },
       {
         path: "pending-orders",
-        element: <PendingOrders />,
+        element: (
+          <PrivateRoot>
+            <PendingOrders />
+          </PrivateRoot>
+        ),
       },
       {
         path: "update-orders-history",
-        element: <UpdateOrdersHistory />,
+        element: (
+          <PrivateRoot>
+            <UpdateOrdersHistory />
+          </PrivateRoot>
+        ),
       },
       {
         path: "sales-reports-daily",
-        element: <SalesReportsDaily />,
+        element: (
+          <PrivateRoot>
+            <SalesReportsDaily />
+          </PrivateRoot>
+        ),
       },
       {
         path: "delivery-time-report",
-        element: <DeliveryTimeReport />,
+        element: (
+          <PrivateRoot>
+            <DeliveryTimeReport />
+          </PrivateRoot>
+        ),
       },
       {
         path: "materials-used-report",
-        element: <MaterialsUsedReport />,
+        element: (
+          <PrivateRoot>
+            <MaterialsUsedReport />
+          </PrivateRoot>
+        ),
       },
       {
         path: "fund-report-daily",
-        element: <FundReportDaily />,
+        element: (
+          <PrivateRoot>
+            <FundReportDaily />
+          </PrivateRoot>
+        ),
       },
       {
         path: "product-sales-report",
-        element: <ProductSalesReport />,
+        element: (
+          <PrivateRoot>
+            <ProductSalesReport />
+          </PrivateRoot>
+        ),
       },
       {
         path: "sales-reports-with-addons",
-        element: <SalesReportsWithAddons />,
+        element: (
+          <PrivateRoot>
+            <SalesReportsWithAddons />
+          </PrivateRoot>
+        ),
       },
       {
         path: "sales-report-details",
-        element: <SalesReportDetails />,
+        element: (
+          <PrivateRoot>
+            <SalesReportDetails />
+          </PrivateRoot>
+        ),
       },
       {
         path: "counter-report-daily",
-        element: <CounterReportDaily />,
+        element: (
+          <PrivateRoot>
+            <CounterReportDaily />
+          </PrivateRoot>
+        ),
       },
       {
         path: "user-access",
-        element: <UserAccess />,
+        element: (
+          <PrivateRoot>
+            <UserAccess />
+          </PrivateRoot>
+        ),
       },
       {
         path: "category",
-        element: <Category />,
+        element: (
+          <PrivateRoot>
+            <Category />
+          </PrivateRoot>
+        ),
       },
       {
         path: "product",
-        element: <Product />,
+        element: (
+          <PrivateRoot>
+            <Product />
+          </PrivateRoot>
+        ),
       },
       {
         path: "add-ons",
-        element: <AddOns />,
+        element: (
+          <PrivateRoot>
+            <AddOns />
+          </PrivateRoot>
+        ),
       },
       {
         path: "counter",
-        element: <Counter />,
+        element: (
+          <PrivateRoot>
+            <Counter />
+          </PrivateRoot>
+        ),
       },
       {
         path: "vat-bin",
-        element: <VatBin />,
+        element: (
+          <PrivateRoot>
+            <VatBin />
+          </PrivateRoot>
+        ),
       },
       {
         path: "system-settings",
-        element: <SystemSettings />,
+        element: (
+          <PrivateRoot>
+            <SystemSettings />
+          </PrivateRoot>
+        ),
       },
       {
         path: "users",
-        element: <Users />,
+        element: (
+          <PrivateRoot>
+            <Users />
+          </PrivateRoot>
+        ),
       },
       {
         path: "print-preview",
-        element: <PrintPreview />,
+        element: (
+          <PrivateRoot>
+            <PrintPreview />
+          </PrivateRoot>
+        ),
       },
       {
         path: "order-orders",
-        element: <Order_history/>,
+        element: (
+          <PrivateRoot>
+            <OrderHistory />
+          </PrivateRoot>
+        ),
       },
-    ]
+    ],
   },
-
 ]);

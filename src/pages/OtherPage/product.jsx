@@ -15,6 +15,7 @@ const Product = () => {
   const { categoryNames, loading: categoriesLoading, error: categoriesError } = CategroieHook();
   const axiosSecure = UseAxiosSecure();
    const { branch } = useContext(AuthContext);
+   console.log(branch);
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ const Product = () => {
     vatType: "amount",
     status: "available",
     productDetails: "",
-    branch: branch || "",
+    branch: branch || "teaxo",
     photo: "",
 
   });
@@ -55,6 +56,7 @@ const Product = () => {
 
   const handleAddOrEditProduct = async () => {
     setIsLoading(true);
+    console.log(formData);
     try {
       if (editId) {
         // Update product
@@ -76,7 +78,7 @@ const Product = () => {
         vatType: "amount",
         status: "available",
         productDetails: "",
-        branch: branch || "",
+        branch: branch || "teaxo",
         photo: "",
       });
       setVatInput("");
