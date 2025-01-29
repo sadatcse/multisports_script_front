@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
 import PropTypes from "prop-types"; // Import PropTypes for type-checking
 import useAxiosSecure from "../Hook/UseAxioSecure"; // Import your axios instance
 
@@ -96,7 +96,7 @@ const AuthProvider = ({ children }) => {
     changePassword,
   };
 
-  console.log("Auth Context in AuthProvider:", authInfo);
+
 
   return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;
 };

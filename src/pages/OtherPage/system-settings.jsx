@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import { GoPlus } from "react-icons/go";
@@ -23,18 +23,18 @@ const CompanySettings = () => {
   const [editId, setEditId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
-
-  const fetchCompanies = async () => {
+  const fetchCompanies = useCallback(async () => {
     try {
       const response = await axiosSecure.get(`/company/`);
       setCompanies(response.data);
     } catch (error) {
       console.error("Error fetching companies:", error);
     }
-  };
+  }, [axiosSecure]);
+  
+  useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]);
 
   const handleAddOrEditCompany = async () => {
     setIsLoading(true);

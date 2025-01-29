@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
 import moment from "moment";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
+import Preloader from "../../components/Shortarea/Preloader";
 
 const SalesReportsDaily = () => {
   const [fromDate, setFromDate] = useState(new Date());
@@ -12,8 +12,10 @@ const SalesReportsDaily = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const axiosSecure = UseAxiosSecure();
+     const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async () => {
+    setIsLoading(true);
     setLoading(true);
     setError("");
     try {
@@ -39,10 +41,12 @@ const SalesReportsDaily = () => {
       }));
 
       setData(transformedData);
+      
     } catch (err) {
       setError("Failed to fetch data. Please try again.");
     } finally {
       setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -80,6 +84,10 @@ const SalesReportsDaily = () => {
           </div>
         </div>
       </div>
+<div>
+{isLoading ? (
+    <Preloader />
+  ) : (
 
       <div className="mt-6">
         <h3 className="text-md font-semibold mb-2">
@@ -147,6 +155,10 @@ const SalesReportsDaily = () => {
           </table>
         </div>
       </div>
+
+ )}
+</div>
+
     </div>
   );
 };

@@ -2,10 +2,22 @@ import React, { forwardRef, useEffect, useState } from "react";
 
 const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete }, ref) => {
   const [printed, setPrinted] = useState(false); // Flag to prevent double printing
+  const getCurrentDateTime = () => {
+    return new Date().toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
 
   const printReceipt = () => {
     if (!ref.current || printed) return; // Avoid duplicate printing
     setPrinted(true);
+
+
 
     const iframe = document.createElement("iframe");
     iframe.style.position = "absolute";
@@ -26,7 +38,7 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
               margin: auto;
               padding: 0;
               width: 75mm;
-              height: fit-content;
+              height: 115mm;
             }
             .container {
               margin: auto;
@@ -34,6 +46,7 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
               font-size: 12px;
               color: #000;
               background-color: #fff;
+              page-break-after: always;
             }
             .header {
               text-align: center;
@@ -42,7 +55,7 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
             .table {
               width: 100%;
               border-collapse: collapse;
-              font-size: 12px;
+              font-size: 14px;
             }
             .dashed-line {
               margin: 5px 0;
@@ -85,7 +98,8 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
       fontSize: "12px",
       color: "#000",
       backgroundColor: "#fff",
-      height: "fit-content",
+      height: "115mm"
+      
     },
     header: {
       textAlign: "center",
@@ -94,7 +108,7 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
     table: {
       width: "100%",
       borderCollapse: "collapse",
-      fontSize: "12px",
+      fontSize: "14px",
     },
     dashedLine: {
       margin: "5px 0",
@@ -116,7 +130,7 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
       <div style={styles.header}>
         <h2
           style={{
-            fontSize: "16px",
+            fontSize: "20px",
             fontWeight: "bold",
             marginBottom: "2px",
           }}
@@ -134,10 +148,10 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
 
       {/* Invoice Info Section */}
       <div>
-        <p style={{ fontSize: "12px", textAlign: "center", margin: 0 }}>
+        <p style={{ fontSize: "14px", textAlign: "center", margin: 0 }}>
           Invoice No: {invoiceData?.invoiceSerial || "Unknown"}
         </p>
-        <p style={{ fontSize: "12px", textAlign: "center", margin: 0 }}>
+        <p style={{ fontSize: "14px", textAlign: "center", margin: 0 }}>
           Date:{" "}
           {new Date(invoiceData?.dateTime).toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -145,7 +159,7 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
             year: "numeric",
           })}
         </p>
-        <p style={{ fontSize: "12px", textAlign: "center", margin: 0 }}>
+        <p style={{ fontSize: "14px", textAlign: "center", margin: 0 }}>
           Served By: {invoiceData?.loginUserName || "Staff"}
         </p>
         <hr style={styles.dashedLine} />
@@ -208,7 +222,11 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
        
         <p>Thank you for dining with us!</p>
         <p>{profileData?.website || "www.sadatkhan.com"}</p>
+        <p style={{ fontSize: "10px", marginTop: "5px" }}>
+          Printed On: {getCurrentDateTime()}
+        </p>
       </div>
+      <div style={{ pageBreakAfter: "always" }}></div>
     </div>
   );
 });

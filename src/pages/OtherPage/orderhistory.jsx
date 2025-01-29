@@ -3,14 +3,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ReactPaginate from "react-paginate";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
-import { Modal } from "react-bootstrap";
+
 import { FaEye } from "react-icons/fa";
 import moment from "moment/moment";
+import Preloader from "../../components/Shortarea/Preloader";
 
 const OrderHistory = () => {
   const [date, setDate] = useState(new Date());
   const [orderData, setOrderData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
+   const [isLoading, setIsLoading] = useState(false);
   const ordersPerPage = 5;
   const axiosSecure = UseAxiosSecure();
   const [showcaseData, setShowcaseData] = useState({
@@ -23,6 +25,7 @@ const OrderHistory = () => {
   const [showModal, setShowModal] = useState(false);
 
   const fetchOrders = async () => {
+    setIsLoading(true);
     try {
       // Format the date to 'YYYY-MM-DD'
       const formattedDate = moment(date).format('YYYY-MM-DD');
@@ -38,9 +41,11 @@ const OrderHistory = () => {
   
         setShowcaseData({ totalOrders, totalQuantity, totalAmount });
         setOrderData(data.orders);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error fetching order history:", error);
+      setIsLoading(false);
     }
   };
 
@@ -82,7 +87,16 @@ const OrderHistory = () => {
           </div>
         </div>
       </div>
-      <div className="flex justify-center items-center  bg-gray-100 m-5">
+
+<div>
+{isLoading ? (
+    <Preloader />
+  ) : (
+
+<div>
+ 
+
+     <div className="flex justify-center items-center  bg-gray-100 m-5">
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-white shadow-xl rounded-lg">
     <div className="bg-blue-50 p-6 shadow-md rounded-lg text-center">
       <h3 className="text-lg font-semibold text-gray-700">Total Orders</h3>
@@ -99,8 +113,7 @@ const OrderHistory = () => {
   </div>
 </div>
 
-
-      <div className="bg-white border rounded-xl shadow-lg p-8">
+    <div className="bg-white border rounded-xl shadow-lg p-8">
         <h3 className="text-2xl font-semibold text-gray-700 mb-6">Order Details</h3>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-sm md:text-base">
@@ -155,6 +168,14 @@ const OrderHistory = () => {
           />
         </div>
       </div>
+
+
+</div>
+
+ )}
+</div>
+
+  
 
       {showModal && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

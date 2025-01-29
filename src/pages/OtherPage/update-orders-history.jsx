@@ -1,52 +1,55 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import { FiEdit, FiTrash2, FiEye } from "react-icons/fi";
+import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
+import { FiTrash2 } from "react-icons/fi";
 import Swal from "sweetalert2";
 import Mtitle from "../../components library/Mtitle";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { AuthContext } from "../../providers/AuthProvider";
 import useCompanyHook from "../../Hook/useCompanyHook";
 import ReceiptTemplate from "../../components/Receipt/ReceiptTemplate ";
+import CookingAnimation from "../../components/CookingAnimation";
 
 const UpdateOrdersHistory  = () => {
   const axiosSecure = UseAxiosSecure();
-  const { companies, loading, error } = useCompanyHook();
+  const { companies, loading} = useCompanyHook();
   const receiptRef = useRef();
-  const { branch } = useContext(AuthContext);
+ const { user,branch } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editOrder, setEditOrder] = useState(null);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
-  const [printOrderId, setPrintOrderId] = useState(null);
+  const [printOrderId] = useState(null);
 const [print, setprint] = useState([]);
 
 
-  useEffect(() => {
-    fetchPendingOrders();
-  }, []);
+const fetchPendingOrders = useCallback(async () => {
+  setIsLoading(true);
+  try {
+    const response = await axiosSecure.get(`/invoice/${branch}/status/completed`);
+    setOrders(response.data);
+  } catch (error) {
+    console.error("Error fetching pending orders:", error);
+  }
+  setIsLoading(false);
+}, [axiosSecure, branch]);
 
-  const fetchPendingOrders = async () => {
-    try {
-      const response = await axiosSecure.get(`/invoice/${branch}/status/completed`);
-      setOrders(response.data);
-    } catch (error) {
-      console.error("Error fetching pending orders:", error);
-    }
-  };
+useEffect(() => {
+  fetchPendingOrders();
+}, [fetchPendingOrders]);
 
-  const handleOrderUpdate = async (id, status) => {
-    try {
-      setIsLoading(true);
-      await axiosSecure.put(`/invoice/update/${id}`, { orderStatus: status });
-      fetchPendingOrders();
-      Swal.fire("Success!", `Order has been updated to ${status}.`, "success");
-    } catch (error) {
-      console.error("Error updating order status:", error);
-      Swal.fire("Error!", "Failed to update order status. Please try again.", "error");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleOrderUpdate = async (id, status) => {
+  //   try {
+  //     setIsLoading(true);
+  //     await axiosSecure.put(`/invoice/update/${id}`, { orderStatus: status });
+  //     fetchPendingOrders();
+  //     Swal.fire("Success!", `Order has been updated to ${status}.`, "success");
+  //   } catch (error) {
+  //     console.error("Error updating order status:", error);
+  //     Swal.fire("Error!", "Failed to update order status. Please try again.", "error");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleEditOrder = (order) => {
     setEditOrder(order);
@@ -54,40 +57,27 @@ const [print, setprint] = useState([]);
   };
 
   const handlePrintComplete = () => {
-    setIsPrintModalOpen(false); // Close modal after printing
+    setIsPrintModalOpen(false); 
   };
 
   const handlePrintOrder = (id) => {
-    // Find the order with the matching ID
+
     const order = orders.find((order) => order._id === id);
   
     if (order) {
-      // Set the found order to the printOrder state
+  
       setprint(order);
     }
   
-    // Set the print modal to open
+
     setIsPrintModalOpen(true);
   
-    // Trigger printing if the receiptRef is defined
+
     if (receiptRef.current) {
       receiptRef.current.printReceipt();
     }
   };
-  const handleSaveEditOrder = async () => {
-    try {
-      setIsLoading(true);
-      await axiosSecure.put(`/invoice/update/${editOrder._id}`, { products: editOrder.products });
-      fetchPendingOrders();
-      setIsModalOpen(false);
-      Swal.fire("Success!", "Order has been updated.", "success");
-    } catch (error) {
-      console.error("Error saving order edits:", error);
-      Swal.fire("Error!", "Failed to save order edits. Please try again.", "error");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
 
   const handleRemove = async (id) => {
     Swal.fire({
@@ -112,15 +102,15 @@ const [print, setprint] = useState([]);
     });
   };
 
-  const handleProductChange = (index, qty) => {
-    const updatedProducts = [...editOrder.products];
-    updatedProducts[index].qty = qty;
-    updatedProducts[index].subtotal = qty * updatedProducts[index].rate;
-    setEditOrder({ ...editOrder, products: updatedProducts });
-  };
+
 
   return (
-    <div className="p-4 min-h-screen">
+<div>
+{loading ? (
+    <CookingAnimation />
+  ) : (
+
+  <div className="p-4 min-h-screen">
       <Mtitle title="Finished Order" />
 
       <section className="overflow-x-auto border shadow-sm rounded-xl p-4 mt-5">
@@ -165,13 +155,15 @@ const [print, setprint] = useState([]);
                         <span>View</span>
                     </button>
               
-                    <button
-                      onClick={() => handleRemove(order._id)}
-                      className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-700 transition"
-                      disabled={isLoading}
-                    >
-                      <FiTrash2 />
-                    </button>
+                        {user.role === "admin" && (
+      <button
+        onClick={() => handleRemove(order._id)}
+        className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-700 transition"
+        disabled={isLoading}
+      >
+        <FiTrash2 />
+      </button>
+    )}
                   </td>
                 </tr>
               ))
@@ -186,10 +178,10 @@ const [print, setprint] = useState([]);
             {/* Header */}
             <div className="flex justify-between items-center mb-6 border-b pb-4">
               <div>
-                <h2 className="text-2xl font-bold text-gray-800">Tea XO</h2>
-                <p className="text-sm text-gray-600">26/C Block Taj Mahal Road, Mohammadpur, Dhaka</p>
+                <h2 className="text-2xl font-bold text-gray-800">{companies[0].name}</h2>
+                <p className="text-sm text-gray-600">{companies[0].address}</p>
                 <p className="text-sm text-gray-600">
-                  Cell: 01711659618
+                  Cell: {companies[0].phone}
                 </p>
               </div>
               <button
@@ -248,7 +240,7 @@ const [print, setprint] = useState([]);
 
             {/* Footer */}
             <div className="flex justify-between items-center mt-6 pt-4 border-t">
-              <p className="text-gray-500 text-sm">Powered by Tea XO</p>
+              <p className="text-gray-500 text-sm">Powered by {companies[0].name}</p>
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 transition"
@@ -284,6 +276,10 @@ const [print, setprint] = useState([]);
         </div>
       )}
     </div>
+
+
+ )}
+</div>
   );
 };
 

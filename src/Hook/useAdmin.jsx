@@ -39,7 +39,7 @@ const useAdmin = () => {
     };
 
     const userType = getUserType(user?.email);
-    console.log(userType);
+
 
     return { loading, userType };
 };

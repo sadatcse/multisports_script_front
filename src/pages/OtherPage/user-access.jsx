@@ -1,29 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import Swal from "sweetalert2";
+import { AuthContext } from "../../providers/AuthProvider";
+import CookingAnimation from "../../components/CookingAnimation";
+
 
 const UserAccess = () => {
   const [userLogs, setUserLogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const axiosSecure = UseAxiosSecure();
-
-  const fetchUserLogs = async (page) => {
+  const { user} = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState(true);
+  const fetchUserLogs = useCallback(async (page) => {
+    setIsLoading(true);
     try {
       const response = await axiosSecure.get(`/userlog/paginated?page=${page}&limit=10`);
       const { logs, totalPages } = response.data;
-
+  
       setUserLogs(logs);
       setTotalPages(totalPages);
       setCurrentPage(page);
     } catch (error) {
       console.error("Error fetching user logs:", error);
     }
-  };
-
+    setIsLoading(false);
+  }, [axiosSecure]);
+  
   useEffect(() => {
     fetchUserLogs(currentPage);
-  }, [currentPage]);
+  }, [fetchUserLogs, currentPage]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -32,6 +38,17 @@ const UserAccess = () => {
   };
 
   const handleDelete = async (id) => {
+    if (user.role !== "admin") {
+      Swal.fire({
+        title: "Access Denied!",
+        text: "You do not have permission to delete user logs.",
+        icon: "error",
+        confirmButtonColor: "#d33",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+  
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -55,6 +72,12 @@ const UserAccess = () => {
   };
 
   return (
+<div>
+{isLoading ? (
+    <CookingAnimation />
+  ) : (
+
+
     <div className="p-6 min-h-screen bg-gray-100">
       <div className="bg-white border rounded-lg shadow-md p-6 mb-8">
         <h2 className="text-2xl font-bold text-blue-700 mb-6">User Access Logs</h2>
@@ -91,6 +114,7 @@ const UserAccess = () => {
                       {log.logoutTime ? new Date(log.logoutTime).toLocaleString() : "N/A"}
                     </td>
                     <td className="p-3 border text-center">
+                      
                       <button
                         onClick={() => handleDelete(log._id)}
                         className="bg-red-500 text-white py-1 px-3 rounded-lg shadow-md hover:bg-red-600 transition"
@@ -127,6 +151,9 @@ const UserAccess = () => {
         </button>
       </div>
     </div>
+
+ )}
+</div>
   );
 };
 

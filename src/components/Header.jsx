@@ -10,11 +10,13 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import person from "../assets/Raw-Image/Person.jpg";
 import UseAxiosSecure from "../Hook/UseAxioSecure";
+import Preloader from "./Shortarea/Preloader";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
+   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate(); 
   const { user, logoutUser  } = useContext(AuthContext);
   const axiosSecure = UseAxiosSecure();
@@ -23,18 +25,20 @@ const Header = () => {
   };
 
   const openModal = () => {
+    setIsLoading(true);
     setIsModalOpen(true);
 
-    // Fetch product data from the backend
     axiosSecure
       .get("/invoice/teaxo/item") // Updated API endpoint
       .then((response) => {
         setProducts(response.data);
+        setIsLoading(false); // Move inside the .then() block
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
+        setIsLoading(false); // Ensure it is also set in case of an error
       });
-  };
+};
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -124,7 +128,8 @@ const Header = () => {
 
       {/* Modal for Sell Product */}
       {isModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center animate-fadeIn">
+
+<div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center animate-fadeIn">
     <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl relative p-8 border border-gray-200">
       {/* Close Button */}
       <button
@@ -144,6 +149,11 @@ const Header = () => {
       </div>
 
       {/* Product Table */}
+
+      {isLoading ? (
+    <Preloader />
+  ) : (
+
       <div className="overflow-auto max-h-80">
         <table className="min-w-full text-left border-collapse border border-gray-300">
           <thead>
@@ -170,6 +180,12 @@ const Header = () => {
         </table>
       </div>
 
+
+ )}
+
+
+
+
       {/* Footer */}
       <div className="mt-8 flex justify-end gap-4">
         <button
@@ -181,6 +197,9 @@ const Header = () => {
       </div>
     </div>
   </div>
+
+
+
 )}
     </header>
   );

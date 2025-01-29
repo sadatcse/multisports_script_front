@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import { TfiSearch } from "react-icons/tfi";
@@ -15,7 +15,7 @@ const Product = () => {
   const { categoryNames, loading: categoriesLoading, error: categoriesError } = CategroieHook();
   const axiosSecure = UseAxiosSecure();
    const { branch } = useContext(AuthContext);
-   console.log(branch);
+
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,11 +40,7 @@ const Product = () => {
   const [vatInput, setVatInput] = useState(""); // Temporary state for VAT input
   const [debounceTimeout, setDebounceTimeout] = useState(null); // Timeout for debounce
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const response = await axiosSecure.get(`/product/`);
       setProducts(response.data);
@@ -52,11 +48,15 @@ const Product = () => {
     } catch (error) {
       console.error("Error fetching products:", error);
     }
-  };
+  }, [axiosSecure]);
+  
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const handleAddOrEditProduct = async () => {
     setIsLoading(true);
-    console.log(formData);
+
     try {
       if (editId) {
         // Update product

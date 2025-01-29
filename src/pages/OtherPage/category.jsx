@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import { TfiSearch } from "react-icons/tfi";
@@ -27,17 +27,12 @@ const Category = () => {
 
   const LOCAL_STORAGE_KEY = `categories_${branch}`;
 
-  const clearLocalStorage = () => {
+  const clearLocalStorage = useCallback(() => {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
-  };
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
+  }, [LOCAL_STORAGE_KEY]);
+  const fetchCategories = useCallback(async () => {
     try {
-      clearLocalStorage();
+      clearLocalStorage();  // Now this function won't trigger unnecessary re-renders
       const response = await axiosSecure.get(`/category/`);
       const filteredData = response.data.filter(
         (category) => category.branch === branch && category.isActive === true
@@ -51,7 +46,11 @@ const Category = () => {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  };
+  }, [axiosSecure, branch, LOCAL_STORAGE_KEY, clearLocalStorage]);
+  
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handleAddOrEditCategory = async () => {
     setIsLoading(true);

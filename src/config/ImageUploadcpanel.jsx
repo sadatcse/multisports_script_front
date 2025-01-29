@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
+
 import toast from "react-hot-toast";
 
 const ImageUpload = ({
@@ -27,7 +27,7 @@ const ImageUpload = ({
 
       const data = response.data;
       const path = `${process.env.REACT_APP_S3_BASE_URL}/${data.path}`;
-      console.log(path);
+
 
       if (response.status === 200) {
         if (setImageUrl) {

@@ -5,7 +5,6 @@ import {
     MdUpdate,
     MdReport,
     MdAnalytics,
-    MdAccessTime,
     MdCategory,
     MdSettings,
     MdPerson,

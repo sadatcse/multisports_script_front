@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import { GoPlus } from "react-icons/go";
@@ -20,18 +20,18 @@ const Counter = () => {
   const [editId, setEditId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    fetchCounters();
-  }, []);
-
-  const fetchCounters = async () => {
+  const fetchCounters = useCallback(async () => {
     try {
       const response = await axiosSecure.get(`/counter/`);
       setCounters(response.data);
     } catch (error) {
       console.error("Error fetching counters:", error);
     }
-  };
+  }, [axiosSecure]);
+  
+  useEffect(() => {
+    fetchCounters();
+  }, [fetchCounters]);
 
   const handleAddOrEditCounter = async () => {
     setIsLoading(true);

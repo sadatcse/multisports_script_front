@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import { GoPlus } from "react-icons/go";
@@ -22,18 +22,18 @@ const VatBin = () => {
   const [editId, setEditId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    fetchVatTypes();
-  }, []);
-
-  const fetchVatTypes = async () => {
+  const fetchVatTypes = useCallback(async () => {
     try {
       const response = await axiosSecure.get(`/vattype/`);
       setVatTypes(response.data);
     } catch (error) {
       console.error("Error fetching VAT types:", error);
     }
-  };
+  }, [axiosSecure]);
+  
+  useEffect(() => {
+    fetchVatTypes();
+  }, [fetchVatTypes]);
 
   const handleAddOrEditVatType = async () => {
     setIsLoading(true);

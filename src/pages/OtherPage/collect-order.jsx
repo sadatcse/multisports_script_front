@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { AuthContext } from "../../providers/AuthProvider";
@@ -11,6 +11,7 @@ const CollectOrder = () => {
 
   const { user } = useContext(AuthContext);
   const loginUserEmail = user?.email || "info@teaxo.com.bd";
+  const [isProcessing, setIsProcessing] = useState(false);
   const loginUserName = user?.name || "Teaxo";
   const axiosSecure = UseAxiosSecure();
   const [products, setProducts] = useState([]);
@@ -32,29 +33,30 @@ const CollectOrder = () => {
   const { categories } = CategroieHook();
   const [loading, setLoading] = useState(true);
 
+  const fetchProducts = useCallback(async () => {
+    try {
+      const response = await axiosSecure.get("/product/");
+      const data = response.data;
+      const availableProducts = data.filter(
+        (product) => product.status === "available"
+      );
+  
+      const uniqueCategories = [
+        ...new Set(availableProducts.map((p) => p.category)),
+      ];
+      setProducts(availableProducts);
+      if (uniqueCategories.length > 0) {
+        setSelectedCategory(uniqueCategories[0]);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  }, [axiosSecure]);
+  
   useEffect(() => {
-    axiosSecure
-      .get("/product/")
-      .then((response) => {
-        const data = response.data;
-        const availableProducts = data.filter(
-          (product) => product.status === "available"
-        );
-
-        const uniqueCategories = [
-          ...new Set(availableProducts.map((p) => p.category)),
-        ];
-        setProducts(availableProducts);
-        if (uniqueCategories.length > 0) {
-          setSelectedCategory(uniqueCategories[0]);
-        }
-        setLoading(false);
-      })
-      
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-      });
-  }, []);
+    fetchProducts();
+  }, [fetchProducts]);
 
   const roundAmount = (amount) => Math.round(amount);
 
@@ -97,7 +99,17 @@ const CollectOrder = () => {
     setAddedProducts([]);
     setInvoiceSummary({ vat: 0, discount: 0, paid: 0 });
   };
-
+  const validateInputs = () => {
+    if (addedProducts.length === 0) {
+      alert("Please add at least one product to the order.");
+      return false;
+    }
+    if (invoiceSummary.discount < 0 || invoiceSummary.paid < 0) {
+      alert("Discount and paid amounts cannot be negative.");
+      return false;
+    }
+    return true;
+  };
   const removeProduct = (id) => {
     setAddedProducts(addedProducts.filter((p) => p._id !== id));
   };
@@ -122,9 +134,11 @@ const CollectOrder = () => {
   };
 
   const printInvoice = async (number) => {
-    const { subtotal, vat, discount, payable } = calculateTotal();
-    const paid = roundAmount(parseFloat(invoiceSummary.paid || 0));
-    const change = roundAmount(paid - payable);
+    if (!validateInputs()) return;
+    setIsProcessing(true);
+    const {  vat, discount, payable } = calculateTotal();
+    
+    
 
     let data;
 
@@ -149,7 +163,7 @@ const CollectOrder = () => {
 
     try {
       data = await axiosSecure.post("/invoice/post", invoiceDetails);
-      console.log("Invoice saved successfully:", data.data);
+ 
       setprint(data.data);
     } catch (error) {
       console.error("Error saving invoice:", error);
@@ -165,21 +179,24 @@ const CollectOrder = () => {
         
       }
     }
+    setIsProcessing(false);
     resetOrder();
   };
   
 
-  const { subtotal, vat, discount, payable } = calculateTotal();
+  const { subtotal, vat,  payable } = calculateTotal();
   const paid = roundAmount(parseFloat(invoiceSummary.paid || 0));
   const change = paid - payable;
 
   return (
-    <div className="flex p-4 gap-4">
-       {loading ? (
+<div>
+   
+{loading ? (
     <CookingAnimation />
   ) : (
+    <div className="flex p-4 gap-4">
 
- <div className="w-3/5">
+ <div className="w-4/6">
         {/* Categories */}
         <div className="flex flex-wrap gap-2 mb-4 border p-2 rounded shadow">
           {categories.map((category) => (
@@ -242,9 +259,9 @@ const CollectOrder = () => {
       </div>
 
 
-  )}
 
-      <div className="w-2/5 border p-4 rounded shadow">
+
+      <div className="w-2/6 border p-4 rounded shadow">
         {/* Order Type Selector */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Invoice Summary</h2>
@@ -364,18 +381,20 @@ const CollectOrder = () => {
             </tbody>
           </table>
           <div className="flex gap-4 mt-4">
-            <button
-              onClick={() => printInvoice(1)} // Pass 1 for Save button
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 w-full"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => printInvoice(2)} // Pass 2 for Print button
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
-            >
-              Print
-            </button>
+          <button
+                  onClick={() => printInvoice(1)}
+                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 w-full"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? "Processing..." : "Save"}
+                </button>
+                <button
+                  onClick={() => printInvoice(2)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? "Processing..." : "Print"}
+                </button>
           </div>
         </div>
       </div>
@@ -404,6 +423,9 @@ const CollectOrder = () => {
         </div>
       )}
     </div>
+
+ )}
+</div>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FaShoppingBag,
   FaChartBar,
@@ -15,7 +15,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import moment from "moment";
-import axios from "axios";
+
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import CookingAnimation from './../../components/CookingAnimation';
 
@@ -24,21 +24,21 @@ const DashboardHome = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const axiosSecure = UseAxiosSecure();
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      const response = await axiosSecure.get("/invoice/teaxo/dashboard");
+      setDashboardData(response.data);
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+      setError("Failed to fetch data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [axiosSecure]);
+  
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await axiosSecure.get("/invoice/teaxo/dashboard");
-        setDashboardData(response.data);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching dashboard data:", err);
-        setError("Failed to fetch data. Please try again.");
-        setLoading(false);
-      }
-    };
-
     fetchDashboardData();
-  }, []);
+  }, [fetchDashboardData]);
 
   if (loading) {
     return <CookingAnimation />;
@@ -51,7 +51,7 @@ const DashboardHome = () => {
   const {
     todaysTotalSale,
     yesterdaysTotalSale,
-    todaysTotalItems,
+
     dailySales,
     thisMonthName,
     todaysPendingOrders,

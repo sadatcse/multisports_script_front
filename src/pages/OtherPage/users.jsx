@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import { TfiSearch } from "react-icons/tfi";
@@ -29,11 +29,7 @@ const Users = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await axiosSecure.get(`/user/`);
       setUsers(response.data);
@@ -41,10 +37,14 @@ const Users = () => {
     } catch (error) {
       console.error('Error fetching users:', error);
     }
-  };
+  }, [axiosSecure]);
+  
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleAddOrEditUser = async () => {
-    console.log("Form Data before save:", formData);
+
     setIsLoading(true);
     try {
       if (editId) {
@@ -121,7 +121,7 @@ const Users = () => {
 
   const handleImageUpload = (url) => {
     if (url) {
-        console.log("Image URL successfully set:", url);
+
         setFormData((prev) => ({ ...prev, photo: url }));
     } else {
         console.error("Image URL is undefined!");
