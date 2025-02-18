@@ -10,6 +10,7 @@ import ImageUpload from "../../config/ImageUploadcpanel";
 import CategroieHook from "../../Hook/Categroie";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { AuthContext } from "../../providers/AuthProvider";
+import Preloader from "../../components/Shortarea/Preloader";
 
 const Product = () => {
   const { categoryNames, loading: categoriesLoading, error: categoriesError } = CategroieHook();
@@ -37,16 +38,20 @@ const Product = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [Loading, setLoading] = useState(false);
   const [vatInput, setVatInput] = useState(""); // Temporary state for VAT input
   const [debounceTimeout, setDebounceTimeout] = useState(null); // Timeout for debounce
 
   const fetchProducts = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await axiosSecure.get(`/product/`);
       setProducts(response.data);
       setFilteredProducts(response.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setLoading(false);
     }
   }, [axiosSecure]);
   
@@ -200,7 +205,11 @@ const Product = () => {
         {rowsPerPageAndTotal}
       </div>
 
-      <section className="overflow-x-auto border shadow-sm rounded-xl p-4 pb- mt-5">
+      {Loading ? (
+    <Preloader />
+  ) : (
+
+     <section className="overflow-x-auto border shadow-sm rounded-xl p-4 pb- mt-5">
         <table className="table w-full">
           <thead className="bg-blue-600">
             <tr className="text-sm font-medium text-white text-left">
@@ -245,6 +254,7 @@ const Product = () => {
         <MtableLoading data={products}></MtableLoading>
         {paginationControls}
       </section>
+ )}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

@@ -9,6 +9,7 @@ import Mtitle from "../../components library/Mtitle";
 import ImageUpload from "../../config/ImageUploadcpanel";
 import UseAxiosSecure from '../../Hook/UseAxioSecure';
 import { AuthContext } from "../../providers/AuthProvider";
+import Preloader from "../../components/Shortarea/Preloader";
 
 const Users = () => {
   const axiosSecure = UseAxiosSecure();
@@ -28,14 +29,18 @@ const Users = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+   const [Loading, setLoading] = useState(false);
 
   const fetchUsers = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await axiosSecure.get(`/user/`);
       setUsers(response.data);
       setFilteredUsers(response.data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching users:', error);
+      setLoading(false);
     }
   }, [axiosSecure]);
   
@@ -166,6 +171,10 @@ const Users = () => {
         {rowsPerPageAndTotal}
       </div>
 
+      {Loading ? (
+    <Preloader />
+  ) : (
+
       <section className="overflow-x-auto border shadow-sm rounded-xl p-4 pb- mt-5">
         <table className="table w-full">
           <thead className='bg-blue-600'>
@@ -211,6 +220,7 @@ const Users = () => {
         <MtableLoading data={users}></MtableLoading>
         {paginationControls}
       </section>
+ )}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

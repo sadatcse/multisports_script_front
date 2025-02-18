@@ -8,6 +8,7 @@ import MtableLoading from "../../components library/MtableLoading";
 import Mtitle from "../../components library/Mtitle";
 import UseAxiosSecure from '../../Hook/UseAxioSecure';
 import { AuthContext } from "../../providers/AuthProvider";
+import Preloader from './../../components/Shortarea/Preloader';
 
 const Category = () => {
   const axiosSecure = UseAxiosSecure();
@@ -24,13 +25,14 @@ const Category = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [Loading, setLoading] = useState(false);
   const LOCAL_STORAGE_KEY = `categories_${branch}`;
 
   const clearLocalStorage = useCallback(() => {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
   }, [LOCAL_STORAGE_KEY]);
   const fetchCategories = useCallback(async () => {
+    setLoading(true);
     try {
       clearLocalStorage();  // Now this function won't trigger unnecessary re-renders
       const response = await axiosSecure.get(`/category/`);
@@ -43,8 +45,10 @@ const Category = () => {
         LOCAL_STORAGE_KEY,
         JSON.stringify({ data: filteredData, timestamp: Date.now() })
       );
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setLoading(false);
     }
   }, [axiosSecure, branch, LOCAL_STORAGE_KEY, clearLocalStorage]);
   
@@ -164,6 +168,10 @@ const Category = () => {
         {rowsPerPageAndTotal}
       </div>
 
+      {Loading ? (
+    <Preloader />
+  ) : (
+
       <section className="overflow-x-auto border shadow-sm rounded-xl p-4 pb- mt-5">
         <table className="table w-full">
           <thead className='bg-blue-600'>
@@ -207,6 +215,7 @@ const Category = () => {
         <MtableLoading data={categories}></MtableLoading>
         {paginationControls}
       </section>
+ )}
 
 {isModalOpen && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

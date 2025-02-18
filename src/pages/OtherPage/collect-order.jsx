@@ -261,9 +261,14 @@ const CollectOrder = () => {
 
 
 
-      <div className="w-2/6 border p-4 rounded shadow">
+      <div className="w-2/6 ">
+
+      <div className="border p-4 rounded shadow">      </div>
+
+
         {/* Order Type Selector */}
-        <div className="flex justify-between items-center mb-4">
+<div className="border p-4 rounded shadow">     
+     <div className="flex justify-between items-center mb-4 ">
           <h2 className="text-xl font-bold">Invoice Summary</h2>
           <select
             value={orderType}
@@ -396,7 +401,7 @@ const CollectOrder = () => {
                   {isProcessing ? "Processing..." : "Print"}
                 </button>
           </div>
-        </div>
+        </div></div>
       </div>
       {isModalOpen && (
         <div

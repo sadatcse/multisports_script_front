@@ -8,7 +8,7 @@ const Preloader = () => {
 
   return (
     <div className="flex items-center justify-center ">
-      <div className="relative flex flex-col items-center">
+      <div className="relative flex flex-col items-center mt-10">
         {/* Spinning Plate */}
         <motion.div
           animate={{ rotate: 360 }}

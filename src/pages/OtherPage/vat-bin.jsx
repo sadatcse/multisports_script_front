@@ -5,6 +5,7 @@ import { GoPlus } from "react-icons/go";
 import Mtitle from "../../components library/Mtitle";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { AuthContext } from "../../providers/AuthProvider";
+import Preloader from "../../components/Shortarea/Preloader";
 
 const VatBin = () => {
   const axiosSecure = UseAxiosSecure();
@@ -21,13 +22,16 @@ const VatBin = () => {
   });
   const [editId, setEditId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [Loading, setLoading] = useState(false);
   const fetchVatTypes = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await axiosSecure.get(`/vattype/`);
       setVatTypes(response.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching VAT types:", error);
+      setLoading(false);
     }
   }, [axiosSecure]);
   
@@ -110,7 +114,11 @@ const VatBin = () => {
         </div>
       } />
 
-      <section className="overflow-x-auto border shadow-sm rounded-xl p-4 mt-5">
+{Loading ? (
+    <Preloader />
+  ) : (
+
+  <section className="overflow-x-auto border shadow-sm rounded-xl p-4 mt-5">
         <table className="table w-full">
           <thead className="bg-blue-600">
             <tr className="text-sm font-medium text-white text-left">
@@ -155,6 +163,7 @@ const VatBin = () => {
           </tbody>
         </table>
       </section>
+ )}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

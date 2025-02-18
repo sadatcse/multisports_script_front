@@ -6,6 +6,7 @@ import Mpagination from "../../components library/Mpagination";
 import Mtitle from "../../components library/Mtitle";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { AuthContext } from "../../providers/AuthProvider";
+import Preloader from "../../components/Shortarea/Preloader";
 
 const Counter = () => {
   const axiosSecure = UseAxiosSecure();
@@ -19,13 +20,16 @@ const Counter = () => {
   });
   const [editId, setEditId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [Loading, setLoading] = useState(false);
   const fetchCounters = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await axiosSecure.get(`/counter/`);
       setCounters(response.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching counters:", error);
+      setLoading(false);
     }
   }, [axiosSecure]);
   
@@ -111,6 +115,10 @@ const Counter = () => {
         {rowsPerPageAndTotal}
       </div>
 
+      {Loading ? (
+    <Preloader />
+  ) : (
+
       <section className="overflow-x-auto border shadow-sm rounded-xl p-4 mt-5">
         <table className="table w-full">
           <thead className="bg-blue-600">
@@ -153,6 +161,7 @@ const Counter = () => {
         </table>
         {paginationControls}
       </section>
+ )}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

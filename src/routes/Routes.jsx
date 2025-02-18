@@ -27,6 +27,8 @@ import Users from "../pages/OtherPage/users";
 import PrintPreview from "../pages/OtherPage/PrintPreview";
 import OrderHistory from "../pages/OtherPage/orderhistory";
 import PrivateRoot from "./Root/PrivateRoot";
+import TableManagement from "../pages/OtherPage/table";
+import Customer from "../pages/OtherPage/Customer";
 
 export const router = createBrowserRouter([
   {
@@ -194,6 +196,22 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoot>
             <VatBin />
+          </PrivateRoot>
+        ),
+      },
+      {
+        path: "customer",
+        element: (
+          <PrivateRoot>
+            <Customer />
+          </PrivateRoot>
+        ),
+      },
+      {
+        path: "table",
+        element: (
+          <PrivateRoot>
+            <TableManagement />
           </PrivateRoot>
         ),
       },

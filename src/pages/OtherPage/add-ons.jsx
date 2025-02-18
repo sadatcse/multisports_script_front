@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import { GoPlus } from "react-icons/go";
@@ -6,6 +6,7 @@ import Mpagination from "../../components library/Mpagination";
 import Mtitle from "../../components library/Mtitle";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { AuthContext } from "../../providers/AuthProvider";
+import Preloader from "../../components/Shortarea/Preloader";
 
 const Addons = () => {
   const axiosSecure = UseAxiosSecure();
@@ -20,19 +21,23 @@ const Addons = () => {
   });
   const [editId, setEditId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [Loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchAddons();
-  }, []);
-
-  const fetchAddons = async () => {
+  const fetchAddons = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await axiosSecure.get(`/addons/`);
       setAddons(response.data);
     } catch (error) {
       console.error("Error fetching addons:", error);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [axiosSecure]); 
+  
+  useEffect(() => {
+    fetchAddons();
+  }, [fetchAddons]);
 
   const handleAddOrEditAddon = async () => {
     setIsLoading(true);
@@ -112,6 +117,9 @@ const Addons = () => {
       <div className="text-sm md:text-base">
         {rowsPerPageAndTotal}
       </div>
+      {Loading ? (
+    <Preloader />
+  ) : (
 
       <section className="overflow-x-auto border shadow-sm rounded-xl p-4 mt-5">
         <table className="table w-full">
@@ -155,6 +163,8 @@ const Addons = () => {
         </table>
         {paginationControls}
       </section>
+ )}
+
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

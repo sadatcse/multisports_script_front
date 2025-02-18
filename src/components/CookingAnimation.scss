@@ -10,7 +10,7 @@ $color: #111010; // the rest
 .cooking-container {
   background-color: $color_back;
   height: 100vh;
-  width: 100vw;
+  width: 85vw;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -142,6 +142,51 @@ $color: #111010; // the rest
           animation: fly #{$anim_time}s ease-in-out infinite;
         }
       }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .cooking-container {
+    width: 100vw;
+    height: 100vh;
+    padding: 10px;
+    h1 {
+      font-size: 5vh;
+    }
+    #cooking {
+      width: 65vh;
+      height: 65vh;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .cooking-container {
+    width: 100vw;
+    height: 100vh;
+    padding: 5px;
+    h1 {
+      font-size: 4vh;
+    }
+    #cooking {
+      width: 60vh;
+      height: 60vh;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .cooking-container {
+    width: 100vw;
+    height: 100vh;
+    padding: 5px;
+    h1 {
+      font-size: 3.5vh;
+    }
+    #cooking {
+      width: 50vh;
+      height: 50vh;
     }
   }
 }

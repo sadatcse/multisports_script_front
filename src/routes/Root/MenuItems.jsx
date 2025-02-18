@@ -13,6 +13,8 @@ import {
     MdAccountBalance,
     MdAttachMoney,
     MdHistory,
+    MdTableView,
+    MdContacts,
   } from "react-icons/md";
   
   const menuItems = () => {
@@ -41,6 +43,11 @@ import {
         title: "Order History",
         path: "/dashboard/order-orders",
         icon: <MdHistory className="text-lg" />,
+      },
+      {
+        title: "Customer Manager",
+        path: "/dashboard/customer",
+        icon: <MdContacts className="text-lg" />,
       },
       {
         title: "Reports",
@@ -98,6 +105,12 @@ import {
             path: "/dashboard/vat-bin",
             icon: <MdAccountBalance className="text-lg" />,
           },
+          {
+            title: "Table management",
+            path: "/dashboard/table",
+            icon: <MdTableView className="text-lg" />,
+          },
+        
           {
             title: "System Settings",
             path: "/dashboard/system-settings",
