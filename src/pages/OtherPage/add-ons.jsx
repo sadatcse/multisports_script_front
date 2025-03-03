@@ -26,14 +26,14 @@ const Addons = () => {
   const fetchAddons = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axiosSecure.get(`/addons/`);
+      const response = await axiosSecure.get(`/addons/${branch}/get-all`);
       setAddons(response.data);
     } catch (error) {
       console.error("Error fetching addons:", error);
     } finally {
       setLoading(false);
     }
-  }, [axiosSecure]); 
+  }, [axiosSecure, branch]); 
   
   useEffect(() => {
     fetchAddons();

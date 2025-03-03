@@ -10,12 +10,13 @@ const UserAccess = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const axiosSecure = UseAxiosSecure();
-  const { user} = useContext(AuthContext);
+  const { user,branch} = useContext(AuthContext);
+
     const [isLoading, setIsLoading] = useState(true);
   const fetchUserLogs = useCallback(async (page) => {
     setIsLoading(true);
     try {
-      const response = await axiosSecure.get(`/userlog/paginated?page=${page}&limit=10`);
+      const response = await axiosSecure.get(`/userlog/paginated?branch=${branch}&page=${page}&limit=10`);
       const { logs, totalPages } = response.data;
   
       setUserLogs(logs);
@@ -25,7 +26,7 @@ const UserAccess = () => {
       console.error("Error fetching user logs:", error);
     }
     setIsLoading(false);
-  }, [axiosSecure]);
+  }, [axiosSecure, branch]);
   
   useEffect(() => {
     fetchUserLogs(currentPage);

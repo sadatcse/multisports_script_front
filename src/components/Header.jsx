@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import {
   FaShoppingCart,
   FaCheckCircle,
@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { AuthContext } from "../providers/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import person from "../assets/Raw-Image/Person.jpg";
 import UseAxiosSecure from "../Hook/UseAxioSecure";
 import Preloader from "./Shortarea/Preloader";
@@ -15,10 +15,11 @@ import Preloader from "./Shortarea/Preloader";
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [products, setProducts] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate(); 
-  const { user, logoutUser  } = useContext(AuthContext);
+  const { user, logoutUser,branch  } = useContext(AuthContext);
   const axiosSecure = UseAxiosSecure();
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -29,7 +30,7 @@ const Header = () => {
     setIsModalOpen(true);
 
     axiosSecure
-      .get("/invoice/teaxo/item") // Updated API endpoint
+      .get(`/invoice/${branch}/item`) // Updated API endpoint
       .then((response) => {
         setProducts(response.data);
         setIsLoading(false); // Move inside the .then() block

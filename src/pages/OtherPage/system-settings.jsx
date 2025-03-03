@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import { GoPlus } from "react-icons/go";
 import Mtitle from "../../components library/Mtitle";
 import ImageUpload from "../../config/ImageUploadcpanel";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
+import { AuthContext } from "../../providers/AuthProvider";
 
 const CompanySettings = () => {
   const axiosSecure = UseAxiosSecure();
+      const { branch } = useContext(AuthContext);
   const [companies, setCompanies] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -18,19 +20,21 @@ const CompanySettings = () => {
     logo: "",
     otherInformation: "",
     branch: "",
-    website: "", // New field added
+    website: "",  // New field added
+  binNumber: "", // Add bin number
+  tinNumber: "", // Add tin number
   });
   const [editId, setEditId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchCompanies = useCallback(async () => {
     try {
-      const response = await axiosSecure.get(`/company/`);
+      const response = await axiosSecure.get(`/company/branch/${branch}/`);
       setCompanies(response.data);
     } catch (error) {
       console.error("Error fetching companies:", error);
     }
-  }, [axiosSecure]);
+  }, [axiosSecure, branch]);
   
   useEffect(() => {
     fetchCompanies();
@@ -55,6 +59,8 @@ const CompanySettings = () => {
         otherInformation: "",
         branch: "",
         website: "", // Reset website field
+        binNumber: "", // Reset bin number field
+        tinNumber: "", // Reset tin number field
       });
       setEditId(null);
     } catch (error) {
@@ -124,6 +130,8 @@ const CompanySettings = () => {
               <td className="p-3">Email</td>
               <td className="p-3">Address</td>
               <td className="p-3">Website</td> {/* New column */}
+              <td className="p-3">Bin Number</td> {/* New column */}
+              <td className="p-3">Tin Number</td> {/* New column */}
               <td className="p-3 text-right">Action</td>
             </tr>
           </thead>
@@ -139,6 +147,8 @@ const CompanySettings = () => {
                 <td className="p-3">{company.email}</td>
                 <td className="p-3">{company.address}</td>
                 <td className="p-3">{company.website || "N/A"}</td> {/* Display website */}
+                <td className="p-3">{company.binNumber || "N/A"}</td> {/* Display bin number */}
+                <td className="p-3">{company.tinNumber || "N/A"}</td> {/* Display tin number */}
                 <td className="p-3 text-right flex justify-end gap-4">
                   <button
                     onClick={() => handleEdit(company._id)}
@@ -198,13 +208,7 @@ const CompanySettings = () => {
               className="w-full border rounded px-3 py-2 mb-4"
               placeholder="Other Information"
             ></textarea>
-            <input
-              type="text"
-              value={formData.branch}
-              onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
-              className="w-full border rounded px-3 py-2 mb-4"
-              placeholder="Branch"
-            />
+
             <input
               type="url"
               value={formData.website}
@@ -212,6 +216,22 @@ const CompanySettings = () => {
               className="w-full border rounded px-3 py-2 mb-4"
               placeholder="Website URL"
             />
+            <div className="flex gap-4">
+  <input
+    type="text"
+    value={formData.binNumber}
+    onChange={(e) => setFormData({ ...formData, binNumber: e.target.value })}
+    className="w-1/2 border rounded px-3 py-2 mb-4"
+    placeholder="Bin Number"
+  />
+  <input
+    type="text"
+    value={formData.tinNumber}
+    onChange={(e) => setFormData({ ...formData, tinNumber: e.target.value })}
+    className="w-1/2 border rounded px-3 py-2 mb-4"
+    placeholder="Tin Number"
+  />
+</div>
             <div className="flex justify-end gap-4">
               <button
                 onClick={() => {

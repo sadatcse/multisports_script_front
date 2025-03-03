@@ -3,7 +3,7 @@ import './CookingAnimation.scss'; // Make sure to import the SCSS file
 
 const CookingAnimation = () => {
   return (
-    <div className="cooking-container">
+    <div className="cooking-container w-70">
       <h1>Resturant Data Loading...</h1>
       <div id="cooking">
         {[...Array(5)].map((_, i) => (

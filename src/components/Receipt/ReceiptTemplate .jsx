@@ -137,14 +137,29 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
         >
           {profileData?.name || "Restaurant Name"}
         </h2>
-        <p style={{ fontSize: "12px", margin: 0 }}>
+        <p style={{ fontSize: "14px", margin: 0 }}>
           {profileData?.address || "Restaurant Address"}
         </p>
-        <p style={{ fontSize: "12px", margin: 0 }}>
+        <p style={{ fontSize: "14px", margin: 0 }}>
           Contact: {profileData?.phone || "No Contact Info"}
         </p>
+        <p style={{ fontSize: "14px", margin: 0 }}>
+        Bin No: {profileData?.binNumber || "No Contact Info"}  Mushak -6.3
+        </p>
+        <hr style={styles.dashedLine} />
+
+                {/* Add Table Name and Customer Name */}
+        <p style={{ fontSize: "12px", margin: "4px 0" }}>
+          Table: {invoiceData?.tableName || "Unknown Table"}
+        </p>
+        <p style={{ fontSize: "12px", margin: "4px 0" }}>
+  Customer: {invoiceData?.customerName && invoiceData.customerName.trim().toLowerCase() !== "unknown" ? invoiceData.customerName : "Guest"}
+</p>
+
         <hr style={styles.dashedLine} />
       </div>
+
+      
 
       {/* Invoice Info Section */}
       <div>
@@ -206,7 +221,7 @@ const ReceiptTemplate = forwardRef(({ profileData, invoiceData, onPrintComplete 
     <p>Discount: ৳ {invoiceData?.discount}</p>
   )}
         <p style={{ fontWeight: "bold" }}>
-          Total: ৳ {(invoiceData?.totalAmount || 0) - (invoiceData?.discount || 0)}
+          Total: ৳ {(invoiceData?.totalAmount || 0)}
         </p>
         <hr style={styles.dashedLine} />
         <p style={{ fontStyle: "italic" }}>

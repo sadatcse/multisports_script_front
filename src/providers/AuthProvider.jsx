@@ -1,24 +1,22 @@
 import { createContext, useState } from "react";
-import PropTypes from "prop-types"; // Import PropTypes for type-checking
-import useAxiosSecure from "../Hook/UseAxioSecure"; // Import your axios instance
+import PropTypes from "prop-types"; 
+import useAxiosSecure from "../Hook/UseAxioSecure"; 
 
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    // Retrieve user from localStorage on initialization
     const storedUser = localStorage.getItem("authUser");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  const [loading, setLoading] = useState(false); // Set initial loading to false
-  const axiosSecure = useAxiosSecure(); // Use the configured axios instance
+  const [loading, setLoading] = useState(false); 
+  const axiosSecure = useAxiosSecure(); 
   const [branch, setBranch] = useState(() => {
-    // Retrieve branch from localStorage on initialization
     const storedBranch = localStorage.getItem("authBranch");
-    return storedBranch || "teaxo";
+    return storedBranch || user?.branch || "teaxo";
   });
 
-  // Register a new user
+
   const registerUser = async (email, password, name, branch) => {
     setLoading(true);
     try {
@@ -37,16 +35,20 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // Log in a user
+
   const loginUser = async (email, password) => {
     setLoading(true);
     try {
-      const { data } = await axiosSecure.post("/user/login", { email, password });
+      const response = await axiosSecure.post("/user/login", { email, password });
+      const data = response.data;
+  
       setUser(data.user);
       setBranch(data.user.branch);
+  
       localStorage.setItem("authUser", JSON.stringify(data.user));
       localStorage.setItem("authBranch", data.user.branch);
-      localStorage.setItem("authToken", data.token); // Store token
+      localStorage.setItem("authToken", data.token);
+  
       return data.user;
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
@@ -60,7 +62,7 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await axiosSecure.put("/user/change-password", { oldPassword, newPassword });
-      return data; // Successfully changed password
+      return data; 
     } catch (error) {
       console.error("Change password error:", error.response?.data || error.message);
       throw error;
@@ -68,21 +70,29 @@ const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  // Log out the user
+  
   const logoutUser = async () => {
     setLoading(true);
     try {
-      // Notify the backend about the logout
       await axiosSecure.post("/user/logout", { email: user.email });
       setUser(null);
-      setBranch("teaxo");
+      setBranch(user.branch);
       localStorage.removeItem("authUser");
       localStorage.removeItem("authBranch");
-      localStorage.removeItem("authToken"); // Clear token
+      localStorage.removeItem("authToken"); 
     } catch (error) {
       console.error("Logout error:", error.response?.data || error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const socialLogin = async (provider) => {
+    try {
+      window.location.href = `${process.env.REACT_APP_BACKEND_URL}/user/${provider}`;
+    } catch (error) {
+      console.error("Social login error:", error.response?.data || error.message);
+      throw error;
     }
   };
 
@@ -91,6 +101,7 @@ const AuthProvider = ({ children }) => {
     loading,
     branch,
     registerUser,
+    socialLogin,
     loginUser,
     logoutUser,
     changePassword,

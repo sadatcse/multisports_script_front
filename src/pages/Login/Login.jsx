@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { FaLock, FaEnvelope } from "react-icons/fa";
 import Swal from "sweetalert2";
 import backgroundImage from "../../assets/Background/Login.jpg";
-import Logo from "../../assets/Logo/logo.png";
+import Logo from "../../assets/Logo/login.png";
 import useAuth from "../../Hook/useAuth"; 
 import { toast } from "react-toastify";
-
+import { Helmet } from "react-helmet";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false); 
@@ -76,15 +76,22 @@ const Login = () => {
     }
   };
 
+
   return (
     <div
       className="min-h-screen bg-cover bg-center flex items-center justify-center px-4"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
+
+<Helmet>
+        <title>Login | Leave Restaurant Management System</title> {/* Set title */}
+        <meta name="description" content="Login to access your account in the Restaurant Management System" /> {/* Meta description */}
+        <meta name="robots" content="noindex, nofollow" /> {/* Optionally prevent indexing */}
+      </Helmet>
       <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-md w-full border border-gray-200">
         {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <img src={Logo} alt="Logo" className="w-20 h-20 md:w-28 md:h-28" />
+        <div className="flex justify-center mb-2">
+          <img src={Logo} alt="Logo" className="w-70 h-60 md:w-70 md:h-60" />
         </div>
 
         <h2 className="text-xl md:text-2xl font-bold text-center text-gray-800 mb-6">
@@ -156,6 +163,14 @@ const Login = () => {
           </button>
         </form>
       </div>
+      <footer className="absolute bottom-0 w-full py-8  text-white text-center">
+  <div className="container mx-auto px-6 sm:px-12">
+    <p className="text-lg md:text-xl font-semibold">
+      Leave Restaurant Management System 
+    </p>
+  </div>
+</footer>
+
     </div>
   );
 };

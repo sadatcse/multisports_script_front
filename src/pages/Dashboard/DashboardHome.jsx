@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import {
   FaShoppingBag,
   FaChartBar,
@@ -18,15 +18,17 @@ import moment from "moment";
 
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import CookingAnimation from './../../components/CookingAnimation';
+import { AuthContext } from "../../providers/AuthProvider";
 
 const DashboardHome = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+    const { branch } = useContext(AuthContext);
   const axiosSecure = UseAxiosSecure();
   const fetchDashboardData = useCallback(async () => {
     try {
-      const response = await axiosSecure.get("/invoice/teaxo/dashboard");
+      const response = await axiosSecure.get(`/invoice/${branch}/dashboard`);
       setDashboardData(response.data);
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
@@ -34,7 +36,7 @@ const DashboardHome = () => {
     } finally {
       setLoading(false);
     }
-  }, [axiosSecure]);
+  }, [axiosSecure,branch]);
   
   useEffect(() => {
     fetchDashboardData();
@@ -62,7 +64,7 @@ const DashboardHome = () => {
       {/* Dashboard Title */}
       <div className="mb-6">
         <h1 className="text-xl md:text-2xl font-bold text-gray-700">
-          Dashboard <span className="text-blue-600">(Control Panel)</span>
+        Resturant Dashboard <span className="text-blue-600">(Control Panel)</span>
         </h1>
       </div>
 
@@ -135,10 +137,10 @@ const DashboardHome = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 text-center p-6 mt-auto rounded-lg shadow-lg">
+      <footer className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 text-center pt-6 mt-auto rounded-lg shadow-lg">
         <p className="text-sm text-gray-700 font-medium">
           &copy; {moment().format("YYYY")}{" "}
-          <span className="font-semibold">Teaxo POS Version 1.00</span>. Designed
+          <span className="font-semibold">LEAVE RESTURANT MANAGEMENT SYSTEM 1.00</span>. Designed
           and Developed by
           <a
             href="https://www.sadatkhan.com"

@@ -249,4 +249,19 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "admin",
+    element: <DRoot />,
+    errorElement: <Error404 />,
+    children: [
+      {
+        path: "",
+        element: (
+          <PrivateRoot>
+            <Navigate to="home" replace />
+          </PrivateRoot>
+        ),
+      },
+    ],
+  },
 ]);

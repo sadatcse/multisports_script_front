@@ -1,41 +1,21 @@
 import React, { useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
-import Swal from "sweetalert2";
-import logo from "../../assets/Logo/logo.png";
+
+// import logo from "../../assets/Logo/logo.png";
 import { CiLogout } from "react-icons/ci";
 import menuItems from "./MenuItems";
 import "./Sidebar.css";
 import MenuLink from "./MenuLink/MenuLink";
-import toast from "react-hot-toast";
-
+import { handleLogOut } from "../../utilities/logoutHelper"; 
+import useCompanyHook from "../../Hook/useCompanyHook";
 const Sidebar = ({ isCollapsed }) => {
   const { logoutUser } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
   const UserRole = "admin"; // Example UserRole for logic
+  const { companies } = useCompanyHook();
 
-  const handleLogOut = async () => {
-    try {
-      // Call the logout function from AuthContext
-      await logoutUser();
-      toast.success("User logged out successfully");
-      
-      // Clear local storage (if needed)
-      localStorage.removeItem("authUser");
-      localStorage.removeItem("authBranch");
-
-      // Redirect to the login or home page
-      navigate("/");
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Logout Failed",
-        text: "Logout failed. Please try again later.",
-      });
-      console.error(error);
-    }
-  };
 
   const handleNavigation = (path) => {
     if (path) navigate(path);
@@ -50,7 +30,7 @@ const Sidebar = ({ isCollapsed }) => {
       >
         {/* Logo Section */}
         <div className="flex flex-col items-center mb-6">
-          {!isCollapsed && <img src={logo} alt="Logo" className="w-24 h-24 mb-4" />}
+          {!isCollapsed && <img src={companies[0]?.logo} alt="Logo" className="w-24 h-24 mb-4" />}
         </div>
 
         {/* Menu Section */}
@@ -59,7 +39,6 @@ const Sidebar = ({ isCollapsed }) => {
             {menuItems(UserRole).map((cat) => (
               <li key={cat.title} className="mb-2">
                 {cat.list ? (
-                  // Items with submenus
                   <div className="collapse bg-gray-50 p-1 pt-3 hover:shadow rounded-xl">
                     <input
                       type="checkbox"
@@ -85,7 +64,6 @@ const Sidebar = ({ isCollapsed }) => {
                     </div>
                   </div>
                 ) : (
-                  // Items without submenus
                   <div
                     onClick={() => handleNavigation(cat.path)}
                     className="bg-gray-50 p-3 hover:shadow rounded-xl cursor-pointer flex items-center gap-2 pl-4"
@@ -102,7 +80,7 @@ const Sidebar = ({ isCollapsed }) => {
         {/* Logout Section */}
         <div className="mt-auto">
           <button
-            onClick={handleLogOut}
+            onClick={() => handleLogOut(logoutUser, navigate)}
             className="w-full p-3 flex items-center justify-center gap-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
           >
             <CiLogout size={24} />

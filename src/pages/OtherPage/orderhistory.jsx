@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ReactPaginate from "react-paginate";
@@ -7,6 +7,7 @@ import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { FaEye } from "react-icons/fa";
 import moment from "moment/moment";
 import Preloader from "../../components/Shortarea/Preloader";
+import { AuthContext } from "../../providers/AuthProvider";
 
 const OrderHistory = () => {
   const [date, setDate] = useState(new Date());
@@ -15,6 +16,7 @@ const OrderHistory = () => {
    const [isLoading, setIsLoading] = useState(false);
   const ordersPerPage = 5;
   const axiosSecure = UseAxiosSecure();
+    const { branch } = useContext(AuthContext);
   const [showcaseData, setShowcaseData] = useState({
     totalOrders: 0,
     totalQuantity: 0,
@@ -31,7 +33,7 @@ const OrderHistory = () => {
       const formattedDate = moment(date).format('YYYY-MM-DD');
       
       // Make the request with the formatted date
-      const response = await axiosSecure.get(`/invoice/teaxo/date/${formattedDate}`);
+      const response = await axiosSecure.get(`/invoice/${branch}/date/${formattedDate}`);
       const data = response.data;
   
       if (data && data.orders) {

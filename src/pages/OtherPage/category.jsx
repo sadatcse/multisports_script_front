@@ -35,7 +35,7 @@ const Category = () => {
     setLoading(true);
     try {
       clearLocalStorage();  // Now this function won't trigger unnecessary re-renders
-      const response = await axiosSecure.get(`/category/`);
+      const response = await axiosSecure.get(`/category/${branch}/get-all`);
       const filteredData = response.data.filter(
         (category) => category.branch === branch && category.isActive === true
       );

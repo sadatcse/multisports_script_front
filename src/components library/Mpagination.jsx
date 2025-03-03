@@ -231,7 +231,7 @@ const Mpagination = ({ totalData }) => {
       </div>
     </div>
   );
-  return { paginatedData, paginationControls, rowsPerPageAndTotal };
+  return { paginatedData, paginationControls, rowsPerPageAndTotal,itemsPerPage, setItemsPerPage,currentPage,setCurrentPage};;
 };
 
 export default Mpagination;

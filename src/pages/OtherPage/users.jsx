@@ -34,7 +34,7 @@ const Users = () => {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axiosSecure.get(`/user/`);
+      const response = await axiosSecure.get(`/user/${branch}/get-all/`);
       setUsers(response.data);
       setFilteredUsers(response.data);
       setLoading(false);
@@ -42,7 +42,7 @@ const Users = () => {
       console.error('Error fetching users:', error);
       setLoading(false);
     }
-  }, [axiosSecure]);
+  }, [axiosSecure, branch]);
   
   useEffect(() => {
     fetchUsers();

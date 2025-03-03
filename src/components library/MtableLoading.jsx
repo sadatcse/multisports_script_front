@@ -6,7 +6,7 @@ const MtableLoading = ({ data }) => {
       {data ? (
         data.length === 0 ? (
           <div className="flex justify-center items-center w-full h-full py-28">
-            <p className="text-black-500">No Data Found</p>
+          
           </div>
         ) : (
           // Your logic to render data or table component

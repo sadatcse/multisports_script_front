@@ -30,7 +30,7 @@ const Product = () => {
     vatType: "amount",
     status: "available",
     productDetails: "",
-    branch: branch || "teaxo",
+    branch: branch ,
     photo: "",
 
   });
@@ -45,7 +45,7 @@ const Product = () => {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axiosSecure.get(`/product/`);
+      const response = await axiosSecure.get(`/product/branch/${branch}/get-all`);
       setProducts(response.data);
       setFilteredProducts(response.data);
       setLoading(false);
@@ -53,7 +53,7 @@ const Product = () => {
       console.error("Error fetching products:", error);
       setLoading(false);
     }
-  }, [axiosSecure]);
+  }, [axiosSecure, branch]);
   
   useEffect(() => {
     fetchProducts();
@@ -83,7 +83,7 @@ const Product = () => {
         vatType: "amount",
         status: "available",
         productDetails: "",
-        branch: branch || "teaxo",
+        branch: branch ,
         photo: "",
       });
       setVatInput("");

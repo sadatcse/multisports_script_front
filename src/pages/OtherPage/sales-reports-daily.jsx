@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import Preloader from "../../components/Shortarea/Preloader";
+import { AuthContext } from "../../providers/AuthProvider";
 
 const SalesReportsDaily = () => {
   const [fromDate, setFromDate] = useState(new Date());
@@ -11,6 +12,7 @@ const SalesReportsDaily = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+    const { branch } = useContext(AuthContext);
   const axiosSecure = UseAxiosSecure();
      const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +25,7 @@ const SalesReportsDaily = () => {
       const endDate = moment(toDate).format("YYYY-MM-DD");
 
       const response = await axiosSecure.get(
-        `/invoice/teaxo/date-range`,
+     `/invoice/${branch}/date-range`,
         {
           params: { startDate, endDate },
         }

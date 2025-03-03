@@ -24,14 +24,14 @@ const Counter = () => {
   const fetchCounters = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axiosSecure.get(`/counter/`);
+      const response = await axiosSecure.get(`/counter/${branch}/get-all`);
       setCounters(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching counters:", error);
       setLoading(false);
     }
-  }, [axiosSecure]);
+  }, [axiosSecure, branch]);
   
   useEffect(() => {
     fetchCounters();

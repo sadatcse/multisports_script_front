@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import moment from "moment";
 import Preloader from "../../components/Shortarea/Preloader";
+import { AuthContext } from './../../providers/AuthProvider';
 
 const ProductSalesReport = () => {
   const [categories, setCategories] = useState([]); // Categories list
@@ -13,6 +14,7 @@ const ProductSalesReport = () => {
   const [startDate, setStartDate] = useState(new Date()); // Start date
   const [endDate, setEndDate] = useState(new Date()); // End date
   const axiosSecure = UseAxiosSecure();
+    const { branch } = useContext(AuthContext);
   const [selectedCategory, setSelectedCategory] = useState("All");
     const [isLoading, setIsLoading] = useState(false);
   const [displays, setdisplays] = useState([]); // Categories list
@@ -20,18 +22,19 @@ const ProductSalesReport = () => {
   const fetchCategories = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axiosSecure.get(`/category/`);
+      const response = await axiosSecure.get(`/category/${branch}/get-all`);
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [axiosSecure]);
+  }, [axiosSecure, branch]);
   
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
+
   
   // Fetch products when the category changes
   const fetchProducts = useCallback(async () => {
@@ -39,8 +42,8 @@ const ProductSalesReport = () => {
     try {
       const endpoint =
         category === "All"
-          ? "/product/all/get-all"
-          : `/product/${selectedCategory}/get-all`;
+          ? `/product/branch/${branch}/category/all/get-all`
+          : `/product/branch/${branch}/category/${selectedCategory}/get-all`;
       const response = await axiosSecure.get(endpoint);
       setProducts(response.data);
     } catch (error) {
@@ -48,7 +51,7 @@ const ProductSalesReport = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [axiosSecure, category, selectedCategory]);
+  }, [axiosSecure, category, selectedCategory, branch]);
   
   useEffect(() => {
     fetchProducts();
@@ -60,7 +63,7 @@ const ProductSalesReport = () => {
   
     try {
       const response = await axiosSecure.get(
-        `/invoice/teaxo/sales?category=${category}&product=${product}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`
+        `/invoice/${branch}/sales?category=${category}&product=${product}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`
       );
 
       setdisplays(response.data);

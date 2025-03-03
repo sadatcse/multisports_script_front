@@ -1,12 +1,15 @@
+/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css?family=Amatic+SC');
 
+/* Variables */
 $anim_time: 2.1; // main pan/pancake animation (in seconds)
 $flatten_deg: 85; // how round will the pancake be at the top/peak (in deg)
 $angle: 27; // max pan's angle while flipping (in deg)
 $peak: 40%; // pancake's highest level
-$color_back: #1562c7; // background
-$color: #111010; // the rest
+$color_back: #1562c7; // background color
+$color: #111010; // the rest of the colors
 
+/* Cooking Container Styles */
 .cooking-container {
   background-color: $color_back;
   height: 100vh;
@@ -16,6 +19,7 @@ $color: #111010; // the rest
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 10px;
 
   h1 {
     font-family: 'Amatic SC';
@@ -23,6 +27,7 @@ $color: #111010; // the rest
     color: $color;
     opacity: 0.75;
     animation: pulse 2.5s linear infinite;
+    text-align: center;
   }
 
   #cooking {
@@ -38,6 +43,7 @@ $color: #111010; // the rest
       opacity: 0;
     }
 
+    /* Bubble animations */
     .bubble:nth-child(1) {
       margin-top: 2.5vh;
       left: 58%;
@@ -46,6 +52,7 @@ $color: #111010; // the rest
       background-color: lighten($color, 7%);
       animation: bubble 2s cubic-bezier(0.53, 0.16, 0.39, 0.96) infinite;
     }
+
     .bubble:nth-child(2) {
       margin-top: 3vh;
       left: 52%;
@@ -54,6 +61,7 @@ $color: #111010; // the rest
       background-color: lighten($color, 4%);
       animation: bubble 2s ease-in-out 0.35s infinite;
     }
+
     .bubble:nth-child(3) {
       margin-top: 1.8vh;
       left: 50%;
@@ -62,6 +70,7 @@ $color: #111010; // the rest
       background-color: $color;
       animation: bubble 1.5s cubic-bezier(0.53, 0.16, 0.39, 0.96) 0.55s infinite;
     }
+
     .bubble:nth-child(4) {
       margin-top: 2.7vh;
       left: 56%;
@@ -70,6 +79,7 @@ $color: #111010; // the rest
       background-color: darken($color, 3%);
       animation: bubble 1.8s cubic-bezier(0.53, 0.16, 0.39, 0.96) 0.9s infinite;
     }
+
     .bubble:nth-child(5) {
       margin-top: 2.7vh;
       left: 63%;
@@ -79,6 +89,7 @@ $color: #111010; // the rest
       animation: bubble 1.6s ease-in-out 1s infinite;
     }
 
+    /* Cooking Area */
     #area {
       position: absolute;
       bottom: 0;
@@ -89,6 +100,7 @@ $color: #111010; // the rest
       transform-origin: 15% 60%;
       animation: flip #{$anim_time}s ease-in-out infinite;
 
+      /* Pan and Handle */
       #sides {
         position: absolute;
         width: 100%;
@@ -146,11 +158,12 @@ $color: #111010; // the rest
   }
 }
 
+/* Media Queries for Responsiveness */
 @media (max-width: 1024px) {
   .cooking-container {
     width: 100vw;
     height: 100vh;
-    padding: 10px;
+    padding: 5%;
     h1 {
       font-size: 5vh;
     }
@@ -191,6 +204,7 @@ $color: #111010; // the rest
   }
 }
 
+/* Keyframes for Animation */
 @keyframes jump {
   0% {
     top: 24%;

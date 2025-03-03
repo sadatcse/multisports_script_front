@@ -7,16 +7,34 @@ import useCompanyHook from "../../Hook/useCompanyHook";
 import ReceiptTemplate from "../../components/Receipt/ReceiptTemplate ";
 import CategroieHook from "../../Hook/Categroie";
 import CookingAnimation from "../../components/CookingAnimation";
+import useCustomerTableSearch from "../../Hook/useCustomerTableSearch";
+import NewCustomerModal from "../../components/Modal/NewCustomerModal";
+import Swal from "sweetalert2";
 const CollectOrder = () => {
 
-  const { user } = useContext(AuthContext);
-  const loginUserEmail = user?.email || "info@teaxo.com.bd";
+  const { user,branch } = useContext(AuthContext);
+  const loginUserEmail = user?.email || "info@leavesoft.com";
   const [isProcessing, setIsProcessing] = useState(false);
-  const loginUserName = user?.name || "Teaxo";
+  const loginUserName = user?.name || "leavesoft";
+  const [mobile, setMobile] = useState("");
+
+  const { 
+    customer, 
+    tables, 
+    searchCustomer, 
+    selectedTable, 
+    isCustomerModalOpen,
+    setSelectedTable, 
+    setCustomerModalOpen,
+
+  } = useCustomerTableSearch();
+
   const axiosSecure = UseAxiosSecure();
   const [products, setProducts] = useState([]);
+  const [TableName, setTableName] = useState("No Table Selected");
   const [print, setprint] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+
   const [addedProducts, setAddedProducts] = useState([]);
   const [orderType, setOrderType] = useState("dine-in"); // New state for orderType
   const [invoiceSummary, setInvoiceSummary] = useState({
@@ -25,17 +43,29 @@ const CollectOrder = () => {
     paid: 0,
   });
 
+const handleCustomerSearch = () => {
+  if (!mobile) {
+    Swal.fire("Error", "Please enter a mobile number.", "error");
+    return;
+  }
+  if (!/^\d{11}$/.test(mobile)) {
+    Swal.fire("Invalid Number", "Mobile number must be exactly 11 digits.", "warning");
+    return;
+  }
 
-
+  searchCustomer(mobile);
+};
   const { companies } = useCompanyHook();
+
   const receiptRef = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { categories } = CategroieHook();
+
   const [loading, setLoading] = useState(true);
 
   const fetchProducts = useCallback(async () => {
     try {
-      const response = await axiosSecure.get("/product/");
+      const response = await axiosSecure.get(`/product/branch/${branch}/get-all/`);
       const data = response.data;
       const availableProducts = data.filter(
         (product) => product.status === "available"
@@ -52,7 +82,7 @@ const CollectOrder = () => {
     } catch (error) {
       console.error("Error fetching products:", error);
     }
-  }, [axiosSecure]);
+  }, [axiosSecure, branch]);
   
   useEffect(() => {
     fetchProducts();
@@ -83,6 +113,18 @@ const CollectOrder = () => {
         p._id === id ? { ...p, quantity: p.quantity + 1 } : p
       )
     );
+  };
+
+  const handleTableSelect = (e) => {
+    const selectedTableId = e.target.value;
+    setSelectedTable(selectedTableId);
+
+    const selectedTableObj = tables.find((table) => table._id === selectedTableId);
+    if (selectedTableObj) {
+      setTableName(selectedTableObj.tableName);
+    } else {
+      setTableName("No Table Selected");
+    }
   };
 
   const decrementQuantity = (id) => {
@@ -157,7 +199,8 @@ const CollectOrder = () => {
       loginUserEmail,
       loginUserName,
       counter: "Counter 1",
-      branch: "teaxo",
+      branch: branch,
+      tableName:TableName,
       vat:roundAmount(vat),
     };
 
@@ -188,6 +231,8 @@ const CollectOrder = () => {
   const paid = roundAmount(parseFloat(invoiceSummary.paid || 0));
   const change = paid - payable;
 
+
+
   return (
 <div>
    
@@ -195,7 +240,11 @@ const CollectOrder = () => {
     <CookingAnimation />
   ) : (
     <div className="flex p-4 gap-4">
-
+      <NewCustomerModal
+        isOpen={isCustomerModalOpen}
+        onClose={() => setCustomerModalOpen(false)}
+        mobile={mobile}
+      />
  <div className="w-4/6">
         {/* Categories */}
         <div className="flex flex-wrap gap-2 mb-4 border p-2 rounded shadow">
@@ -263,7 +312,53 @@ const CollectOrder = () => {
 
       <div className="w-2/6 ">
 
-      <div className="border p-4 rounded shadow">      </div>
+      <div className="border p-4 rounded shadow">
+      {/* Flex container for Mobile Input & Table Selection */}
+      <div className="flex items-center gap-4">
+        {/* Mobile Number Input */}
+        <div className="flex-1">
+          <label className="block text-sm font-medium">Enter Mobile Number:</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              className="border p-2 rounded w-full"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+            />
+            <button className="p-2 bg-blue-500 text-white rounded" onClick={handleCustomerSearch}>
+              Search
+            </button>
+          </div>
+        </div>
+
+        {/* Table Selection Dropdown */}
+        <div className="flex-1">
+          <label className="block text-sm font-medium">Select Table:</label>
+          <select
+            className="border p-2 rounded w-full"
+            value={selectedTable}
+            onChange={handleTableSelect}
+          >
+            <option value="">Choose a table</option>
+            {tables.map((table) => (
+              <option key={table._id} value={table._id}>
+                {table.tableName}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Customer Found */}
+      {customer && (
+        <div className="mt-4 p-4 border rounded ">
+          <p><strong>Customer Name:</strong> {customer.name}</p>
+        </div>
+      )}
+
+      {/* New Customer Modal */}
+
+    </div>
 
 
         {/* Order Type Selector */}

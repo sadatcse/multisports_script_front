@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import UseAxiosSecure from "./UseAxioSecure";
 import { AuthContext } from "../providers/AuthProvider";
 
@@ -8,25 +8,27 @@ const CategroieHook = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const axiosSecure = UseAxiosSecure();
-  const { branch } = useContext(AuthContext); 
+  const { branch } = useContext(AuthContext);
 
-  const LOCAL_STORAGE_KEY = `categories_${branch}`;
-  const EXPIRATION_TIME = 30 * 24 * 60 * 60 * 1000;
+  const EXPIRATION_TIME = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
   useEffect(() => {
+    if (!branch) return;
+
+    const LOCAL_STORAGE_KEY = `categories_${branch}`;
+
     const fetchActiveCategories = async () => {
       try {
         const response = await axiosSecure.get(`/category/${branch}/active`);
-        const categoryData = response.data.map((category) => category.categoryName);
+        const sortedCategories = response.data.sort((a, b) => a.serial - b.serial);
+        const categoryData = sortedCategories.map((category) => category.categoryName);
 
+        localStorage.setItem(
+          LOCAL_STORAGE_KEY,
+          JSON.stringify({ data: sortedCategories, timestamp: Date.now() })
+        );
 
-        const storageData = {
-          data: response.data,
-          timestamp: Date.now(),
-        };
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(storageData));
-
-        setCategoryNames(response.data);
+        setCategoryNames(sortedCategories);
         setCategories(categoryData);
         setLoading(false);
       } catch (err) {
@@ -39,24 +41,20 @@ const CategroieHook = () => {
       const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (storedData) {
         const { data, timestamp } = JSON.parse(storedData);
-
-   
         if (Date.now() - timestamp < EXPIRATION_TIME) {
-          const categoryData = data.map((category) => category.categoryName);
-          setCategoryNames(data);
+          const sortedCategories = data.sort((a, b) => a.serial - b.serial);
+          const categoryData = sortedCategories.map((category) => category.categoryName);
+          setCategoryNames(sortedCategories);
           setCategories(categoryData);
           setLoading(false);
           return;
         }
       }
- 
       fetchActiveCategories();
     };
 
-    if (branch) {
-      checkLocalStorage();
-    }
-  }, [branch, axiosSecure]);
+    checkLocalStorage();
+  }, [branch, axiosSecure, EXPIRATION_TIME]); 
 
   return { categoryNames, categories, loading, error };
 };

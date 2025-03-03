@@ -26,14 +26,14 @@ const VatBin = () => {
   const fetchVatTypes = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axiosSecure.get(`/vattype/`);
+      const response = await axiosSecure.get(`/vattype/${branch}/get-all`);
       setVatTypes(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching VAT types:", error);
       setLoading(false);
     }
-  }, [axiosSecure]);
+  }, [axiosSecure, branch]);
   
   useEffect(() => {
     fetchVatTypes();

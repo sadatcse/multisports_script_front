@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import axios from "axios";
 
 import toast from "react-hot-toast";
+import { AuthContext } from "../providers/AuthProvider";
 
 const ImageUpload = ({
   setImageUrl = () => {},
@@ -9,14 +10,16 @@ const ImageUpload = ({
   setValue = () => {},
   label = "Upload Image",
 }) => {
+  const { branch } = useContext(AuthContext);
   const handleImageUpload = async (e) => {
     const imageFile = e.target.files[0];
+   
     const formData = new FormData();
     formData.append("image", imageFile);
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_UPLOAD_URL}/api/get-image-url?pathName=teaxo`,
+        `${process.env.REACT_APP_UPLOAD_URL}/api/get-image-url?pathName=${branch}`,
         formData,
         {
           headers: {
