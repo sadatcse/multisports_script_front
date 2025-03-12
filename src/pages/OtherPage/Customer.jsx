@@ -70,7 +70,15 @@ const CustomerManagement = () => {
   };
 
   const handleEdit = (id) => {
-    const customer = customers.find((c) => c._id === id);
+    const customer = paginatedData.find((c) => c._id === id);
+    if (!customer) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Customer data not found.",
+      });
+      return;
+    }
     setEditId(id);
     setFormData({ ...customer, branch }); // Ensure branch remains from context
     setIsModalOpen(true);

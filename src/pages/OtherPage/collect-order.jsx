@@ -17,6 +17,7 @@ const CollectOrder = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const loginUserName = user?.name || "leavesoft";
   const [mobile, setMobile] = useState("");
+ 
 
   const { 
     customer, 
@@ -31,10 +32,11 @@ const CollectOrder = () => {
 
   const axiosSecure = UseAxiosSecure();
   const [products, setProducts] = useState([]);
-  const [TableName, setTableName] = useState("No Table Selected");
+  const [TableName, setTableName] = useState("");
   const [print, setprint] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-
+ const customerName = customer?.name || "Guest";
+ const customerMobile = customer?.mobile || "n/a";
   const [addedProducts, setAddedProducts] = useState([]);
   const [orderType, setOrderType] = useState("dine-in"); // New state for orderType
   const [invoiceSummary, setInvoiceSummary] = useState({
@@ -198,6 +200,8 @@ const handleCustomerSearch = () => {
       totalSale: roundAmount(payable),
       loginUserEmail,
       loginUserName,
+      customerName,
+      customerMobile,
       counter: "Counter 1",
       branch: branch,
       tableName:TableName,

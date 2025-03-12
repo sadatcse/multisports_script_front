@@ -62,8 +62,8 @@ const Login = () => {
         draggable: true,
         progress: undefined,
       });
-
-      navigate("/dashboard"); 
+      
+      navigate("/dashboard/home"); 
     } catch (error) {
 
       setLoading(false);

@@ -1,6 +1,7 @@
-import { createContext, useState } from "react";
-import PropTypes from "prop-types"; 
-import useAxiosSecure from "../Hook/UseAxioSecure"; 
+import { createContext, useState, useEffect } from "react";
+import PropTypes from "prop-types";
+
+import useAxiosPublic from "../Hook/useAxiosPublic";
 
 export const AuthContext = createContext();
 
@@ -9,13 +10,30 @@ const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem("authUser");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  const [loading, setLoading] = useState(false); 
-  const axiosSecure = useAxiosSecure(); 
+  const [loading, setLoading] = useState(false);
+  const axiosSecure = useAxiosPublic();
   const [branch, setBranch] = useState(() => {
     const storedBranch = localStorage.getItem("authBranch");
     return storedBranch || user?.branch || "teaxo";
   });
+  const [clientIP, setClientIP] = useState(localStorage.getItem("clientIP") || "");
 
+  useEffect(() => {
+    const fetchClientIP = async () => {
+      try {
+        const response = await fetch("https://api64.ipify.org?format=json");
+        const data = await response.json();
+        setClientIP(data.ip);
+        localStorage.setItem("clientIP", data.ip);
+      } catch (error) {
+        console.error("Error fetching IP address:", error);
+      }
+    };
+
+    if (!clientIP) {
+      fetchClientIP();
+    }
+  }, [clientIP]);
 
   const registerUser = async (email, password, name, branch) => {
     setLoading(true);
@@ -25,6 +43,7 @@ const AuthProvider = ({ children }) => {
         password,
         name,
         branch,
+        clientIP,
       });
       return data;
     } catch (error) {
@@ -35,64 +54,40 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-
   const loginUser = async (email, password) => {
     setLoading(true);
     try {
-      const response = await axiosSecure.post("/user/login", { email, password });
+      const response = await axiosSecure.post("/user/login", { email, password, clientIP });
       const data = response.data;
-  
+
       setUser(data.user);
       setBranch(data.user.branch);
-  
       localStorage.setItem("authUser", JSON.stringify(data.user));
       localStorage.setItem("authBranch", data.user.branch);
       localStorage.setItem("authToken", data.token);
-  
+    
       return data.user;
     } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
+    
       throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  const changePassword = async (oldPassword, newPassword) => {
-    setLoading(true);
-    try {
-      const { data } = await axiosSecure.put("/user/change-password", { oldPassword, newPassword });
-      return data; 
-    } catch (error) {
-      console.error("Change password error:", error.response?.data || error.message);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-  
   const logoutUser = async () => {
     setLoading(true);
     try {
-      await axiosSecure.post("/user/logout", { email: user.email });
+      await axiosSecure.post("/user/logout", { email: user.email, clientIP });
       setUser(null);
       setBranch(user.branch);
       localStorage.removeItem("authUser");
       localStorage.removeItem("authBranch");
-      localStorage.removeItem("authToken"); 
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("clientIP");
     } catch (error) {
-      console.error("Logout error:", error.response?.data || error.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const socialLogin = async (provider) => {
-    try {
-      window.location.href = `${process.env.REACT_APP_BACKEND_URL}/user/${provider}`;
-    } catch (error) {
-      console.error("Social login error:", error.response?.data || error.message);
-      throw error;
     }
   };
 
@@ -100,20 +95,17 @@ const AuthProvider = ({ children }) => {
     user,
     loading,
     branch,
+    clientIP,
     registerUser,
-    socialLogin,
     loginUser,
     logoutUser,
-    changePassword,
   };
-
-
 
   return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;
 };
 
 AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired, // Marked as required for clarity
+  children: PropTypes.node.isRequired,
 };
 
 export default AuthProvider;

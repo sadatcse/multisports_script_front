@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
@@ -11,12 +12,13 @@ import CategroieHook from "../../Hook/Categroie";
 import UseAxiosSecure from "../../Hook/UseAxioSecure";
 import { AuthContext } from "../../providers/AuthProvider";
 import Preloader from "../../components/Shortarea/Preloader";
+import useTotalBranch from "../../Hook/UseTotalBrach";
 
-const Product = () => {
+const AProduct = () => {
   const { categoryNames, loading: categoriesLoading, error: categoriesError } = CategroieHook();
+  const { branches, loading: branchLoading } = useTotalBranch();
   const axiosSecure = UseAxiosSecure();
    const { branch } = useContext(AuthContext);
-
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -45,7 +47,7 @@ const Product = () => {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axiosSecure.get(`/product/branch/${branch}/get-all`);
+      const response = await axiosSecure.get(`/product/`);
       setProducts(response.data);
       setFilteredProducts(response.data);
       setLoading(false);
@@ -216,6 +218,7 @@ const Product = () => {
               <td className="p-3 rounded-l-xl">Product Name</td>
               <td className="p-3">Category</td>
               <td className="p-3">Price</td>
+              <td className="p-3">branch</td>
               <td className="p-3">Status</td>
               <td className="p-3 rounded-r-xl text-right px-8">Action</td>
             </tr>
@@ -231,6 +234,7 @@ const Product = () => {
                   <td className="px-4 py-5">{product.productName}</td>
                   <td className="px-4 py-5">{product.category}</td>
                   <td className="px-4 py-5">৳{product.price}</td>
+                  <td className="px-4 py-5">৳{product.branch}</td>
                   <td className="px-4 py-5">{product.status}</td>
                   <td className="py-5 px-6 text-lg flex justify-end space-x-4">
                     <button
@@ -350,6 +354,22 @@ const Product = () => {
               )}
             </div>
             <select
+        value={formData.branch}
+        onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
+        className="focus:border-yellow-400 appearance-none text-gray-700 text-base border shadow-sm rounded-xl w-full py-3 px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
+      >
+        <option value="">Select Branch</option>
+        {branchLoading ? (
+          <option disabled>Loading branches...</option>
+        ) : (
+          branches.map((branchItem) => (
+            <option key={branchItem._id} value={branchItem.name}>
+              {branchItem.name}
+            </option>
+          ))
+        )}
+      </select>
+            <select
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               className="focus:border-yellow-400 appearance-none text-gray-700 text-base border shadow-sm rounded-xl w-full py-3 px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
@@ -405,4 +425,4 @@ const Product = () => {
   );
 };
 
-export default Product;
+export default AProduct;

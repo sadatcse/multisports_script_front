@@ -2,12 +2,13 @@ import React, { useContext, useState, useEffect } from "react";
 import { FaUser, FaMobileAlt, FaEnvelope, FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
 import useCustomerTableSearch from "../../Hook/useCustomerTableSearch";
 import { AuthContext } from "../../providers/AuthProvider";
+import { toast } from "react-toastify"; // Import the toast function
+import "react-toastify/dist/ReactToastify.css"; // Import the toast CSS
 
 const NewCustomerModal = ({ isOpen, onClose, mobile }) => {
   const { addNewCustomer, error } = useCustomerTableSearch();
   const { branch } = useContext(AuthContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
 
   // Form state
   const [formData, setFormData] = useState({
@@ -39,14 +40,17 @@ const NewCustomerModal = ({ isOpen, onClose, mobile }) => {
   // Handle form submission
   const handleSubmit = async () => {
     if (!formData.name || !formData.mobile || !formData.branch) {
-      alert("Name, Mobile, and Branch are required!");
+      toast.error("Name, Mobile, and Branch are required!"); // Show error toast
       return;
     }
 
     setIsSubmitting(true); // Set submitting state to true before making the API call
     await addNewCustomer(formData); // Call the function to add the customer
     if (!error) {
+      toast.success("Customer added successfully!"); // Show success toast
       onClose(); // Close modal only if no error
+    } else {
+      toast.error("Failed to add customer. Please try again."); // Show error toast
     }
     setIsSubmitting(false); // Reset submitting state
   };
@@ -151,12 +155,13 @@ const NewCustomerModal = ({ isOpen, onClose, mobile }) => {
             </div>
           </div>
 
-          {/* Date of First Visit */}
+          {/* Date of First Visit */} 
         </div>
         {error && <div className="text-red-600 mt-2">{error}</div>}
+
         {/* Action Buttons */}
         <div className="flex justify-between mt-4">
-        <button
+          <button
             onClick={handleSubmit}
             disabled={isSubmitting} // Disable the button if submitting
             className="bg-green-600 text-white p-2 rounded w-full mr-2"

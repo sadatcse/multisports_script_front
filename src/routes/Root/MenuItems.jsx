@@ -90,21 +90,21 @@ import {
             path: "/dashboard/product",
             icon: <MdAddShoppingCart className="text-lg" />,
           },
-          {
-            title: "Add-ons",
-            path: "/dashboard/add-ons",
-            icon: <MdAddShoppingCart className="text-lg" />,
-          },
+          // {
+          //   title: "Add-ons",
+          //   path: "/dashboard/add-ons",
+          //   icon: <MdAddShoppingCart className="text-lg" />,
+          // },
           {
             title: "Counter",
             path: "/dashboard/counter",
             icon: <MdCountertops className="text-lg" />,
           },
-          {
-            title: "VAT/BIN",
-            path: "/dashboard/vat-bin",
-            icon: <MdAccountBalance className="text-lg" />,
-          },
+          // {
+          //   title: "VAT/BIN",
+          //   path: "/dashboard/vat-bin",
+          //   icon: <MdAccountBalance className="text-lg" />,
+          // },
           {
             title: "Table management",
             path: "/dashboard/table",

@@ -3,7 +3,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import Error404 from "../pages/Error404/Error";
 import Login from "../pages/Login/Login";
 import Root from "./Root/Root";
-import DRoot from "./Root/DRoot";
+import DRoot from "./Root/Admin/DRoot";
 import DashboardHome from "../pages/Dashboard/DashboardHome";
 import CollectOrder from "../pages/OtherPage/collect-order";
 import PendingOrders from "../pages/OtherPage/pending-orders";
@@ -29,6 +29,16 @@ import OrderHistory from "../pages/OtherPage/orderhistory";
 import PrivateRoot from "./Root/PrivateRoot";
 import TableManagement from "../pages/OtherPage/table";
 import Customer from "../pages/OtherPage/Customer";
+import AHome from './../pages/Admin/AHome';
+import ACatagroie from './../pages/Admin/ACatagroie';
+import ACompany from './../pages/Admin/ACompany';
+import AUser from './../pages/Admin/AUser';
+import AProduct from './../pages/Admin/AProduct';
+import Worklog from './../pages/Admin/Worklog';
+import ErrorLog from './../pages/Admin/ErrorLog';
+import LoginLog from "../pages/Admin/LoginLog";
+import ARoot from "./Root/Aroot";
+import SuperAdminPrivateRoute from "./Root/SuperAdminPrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -44,7 +54,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "dashboard",
-    element: <DRoot />,
+    element: <ARoot />,
     errorElement: <Error404 />,
     children: [
       {
@@ -257,9 +267,57 @@ export const router = createBrowserRouter([
       {
         path: "",
         element: (
-          <PrivateRoot>
+          <SuperAdminPrivateRoute>
             <Navigate to="home" replace />
-          </PrivateRoot>
+            </SuperAdminPrivateRoute>
+        ),
+      },
+      {
+        path: "home",
+        element: (
+          <SuperAdminPrivateRoute> <AHome /></SuperAdminPrivateRoute> 
+        ),
+      },
+      {
+        path: "category",
+        element: (
+          <SuperAdminPrivateRoute>  <ACatagroie /></SuperAdminPrivateRoute> 
+        ),
+      },
+      {
+        path: "company",
+        element: (
+          <SuperAdminPrivateRoute>  <ACompany /></SuperAdminPrivateRoute> 
+        ),
+      },
+      {
+        path: "user",
+        element: (
+          <SuperAdminPrivateRoute><AUser /></SuperAdminPrivateRoute> 
+        ),
+      },
+      {
+        path: "product",
+        element: (
+          <SuperAdminPrivateRoute> <AProduct /></SuperAdminPrivateRoute> 
+        ),
+      },
+      {
+        path: "login-log",
+        element: (
+          <SuperAdminPrivateRoute>  <LoginLog/></SuperAdminPrivateRoute> 
+        ),
+      },
+      {
+        path: "error-log",
+        element: (
+          <SuperAdminPrivateRoute><ErrorLog /></SuperAdminPrivateRoute> 
+        ),
+      },
+      {
+        path: "work-log",
+        element: (
+          <SuperAdminPrivateRoute> <Worklog /></SuperAdminPrivateRoute> 
         ),
       },
     ],

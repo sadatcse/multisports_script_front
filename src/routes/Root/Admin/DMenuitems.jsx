@@ -1,61 +1,64 @@
-
-
 import {
-    MdHome,
-    MdShoppingCart,
-    MdPending,
-    MdUpdate,
-    MdReport,
-    MdAnalytics,
-    MdCategory,
-    MdSettings,
-    MdPerson,
-    MdAddShoppingCart,
-    MdCountertops,
-    MdAccountBalance,
-    MdAttachMoney,
-    MdHistory,
-    MdTableView,
-    MdContacts,
-  } from "react-icons/md";
-  
-  const DMenuitems = () => {
-    return [
-      {
-        title: "Home",
-        path: "/dashboard/home",
-        icon: <MdHome className="text-lg" />,
-      },
-    //   {
-    //     title: "Reports",
-    //     icon: <MdReport className="text-lg" />,
-    //     list: [
-    //       {
-    //         title: "Sales Reports (Daily)",
-    //         path: "/dashboard/sales-reports-daily",
-    //         icon: <MdAnalytics className="text-lg" />,
-    //       },
+  MdHome,
+  MdCategory,
+  MdBusiness,
+  MdPerson,
+  MdShoppingCart,
+  MdSettings,
+  MdLogin,
+  MdError,
+  MdWork,
+} from "react-icons/md";
 
-    //       {
-    //         title: "Product Sales Report",
-    //         path: "/dashboard/product-sales-report",
-    //         icon: <MdAttachMoney className="text-lg" />,
-    //       },
-    //       {
-    //         title: "Counter Report (Daily)",
-    //         path: "/dashboard/counter-report-daily",
-    //         icon: <MdCountertops className="text-lg" />,
-    //       },
-    //       {
-    //         title: "User Access",
-    //         path: "/dashboard/user-access",
-    //         icon: <MdPerson className="text-lg" />,
-    //       },
-    //     ],
-    //   },
+const DMenuitems = () => {
+  return [
+    {
+      title: "Home",
+      path: "/admin/home",
+      icon: <MdHome className="text-lg" />,
+    },
+    {
+      title: "Category",
+      path: "/admin/category",
+      icon: <MdCategory className="text-lg" />,
+    },
+    {
+      title: "Company",
+      path: "/admin/company",
+      icon: <MdBusiness className="text-lg" />,
+    },
+    {
+      title: "User",
+      path: "/admin/user",
+      icon: <MdPerson className="text-lg" />,
+    },
+    {
+      title: "Product",
+      path: "/admin/product",
+      icon: <MdShoppingCart className="text-lg" />,
+    },
+    {
+      title: "Log Data",
+      icon: <MdSettings className="text-lg" />,
+      list: [
+        {
+          title: "Login Log",
+          path: "/admin/login-log",
+          icon: <MdLogin className="text-lg" />,
+        },
+        {
+          title: "Error Log",
+          path: "/admin/error-log",
+          icon: <MdError className="text-lg" />,
+        },
+        {
+          title: "Work Log",
+          path: "/admin/work-log",
+          icon: <MdWork className="text-lg" />,
+        },
+      ],
+    },
+  ];
+};
 
-    ];
-  };
-  
-  export default DMenuitems;
-  
+export default DMenuitems;

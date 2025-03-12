@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import Header from "../../components/Header";
+import Header from "./Header";
+
 
 const DRoot = () => {
   const [isMobile, setIsMobile] = useState(false);

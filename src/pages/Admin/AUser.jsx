@@ -10,10 +10,13 @@ import ImageUpload from "../../config/ImageUploadcpanel";
 import UseAxiosSecure from '../../Hook/UseAxioSecure';
 import { AuthContext } from "../../providers/AuthProvider";
 import Preloader from "../../components/Shortarea/Preloader";
+import useTotalBranch from "../../Hook/UseTotalBrach";
 
-const Users = () => {
+const AUsers = () => {
   const axiosSecure = UseAxiosSecure();
   const { branch } = useContext(AuthContext);
+  const { branches, loading: branchLoading } = useTotalBranch();
+
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,8 +26,7 @@ const Users = () => {
     branch: branch || "",
     status: "active",
     photo: "",
-    password: "",
-    counter: "1"
+    password: ""
   });
   const [editId, setEditId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,7 +37,7 @@ const Users = () => {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axiosSecure.get(`/user/${branch}/get-all/`);
+      const response = await axiosSecure.get(`/user/`);
       setUsers(response.data);
       setFilteredUsers(response.data);
       setLoading(false);
@@ -69,8 +71,7 @@ const Users = () => {
         branch: branch || "",
         status: "active",
         photo: "",
-        password: "",
-        counter: "1"
+        password: ""
       });
       setEditId(null);
     } catch (error) {
@@ -184,7 +185,7 @@ const Users = () => {
               <td className="p-3 rounded-l-xl">Name</td>
               <td className="p-3">Email</td>
               <td className="p-3">Role</td>
-              <td className="p-3">Counter</td>
+              <td className="p-3">Branch</td>
               <td className="p-3">Status</td>
               <td className="p-3 rounded-r-xl text-right px-8">Action</td>
             </tr>
@@ -200,7 +201,7 @@ const Users = () => {
                   <td className="px-4 py-5">{user.name}</td>
                   <td className="px-4 py-5">{user.email}</td>
                   <td className="px-4 py-5">{user.role}</td>
-                  <td className="px-4 py-5">{user.counter}</td>
+                  <td className="px-4 py-5">{user.branch}</td>
                   <td className="px-4 py-5">{user.status}</td>
                   <td className="py-5 px-6 text-lg flex justify-end space-x-4">
                     <button
@@ -244,6 +245,22 @@ const Users = () => {
               className="focus:border-yellow-400 appearance-none text-gray-700 text-base border shadow-sm rounded-xl w-full py-3 px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
               placeholder="Email"
             />
+         <select
+        value={formData.branch}
+        onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
+        className="focus:border-yellow-400 appearance-none text-gray-700 text-base border shadow-sm rounded-xl w-full py-3 px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
+      >
+        <option value="">Select Branch</option>
+        {branchLoading ? (
+          <option disabled>Loading branches...</option>
+        ) : (
+          branches.map((branchItem) => (
+            <option key={branchItem._id} value={branchItem.name}>
+              {branchItem.name}
+            </option>
+          ))
+        )}
+      </select>
             {editId === null && (
               <input
                 type="password"
@@ -262,16 +279,7 @@ const Users = () => {
               <option value="user">User</option>
               <option value="admin">Admin</option>
               <option value="manager">Manager</option>
-            </select>
-            <select
-              value={formData.counter}
-              onChange={(e) => setFormData({ ...formData, counter: e.target.value })}
-              className="focus:border-yellow-400 appearance-none text-gray-700 text-base border shadow-sm rounded-xl w-full py-3 px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
-            >
-              <option value="1">Counter 1</option>
-              <option value="2">Counter 2</option>
-              <option value="3">Counter 3</option>
-              <option value="4">Counter 4</option>
+              <option value="superadmin">Super Admin</option>
             </select>
             <select
               value={formData.status}
@@ -315,4 +323,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default AUsers;
