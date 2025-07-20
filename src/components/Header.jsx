@@ -4,6 +4,7 @@ import {
   FaCheckCircle,
   FaClipboardList,
   FaUserCircle,
+  FaTable,
 } from "react-icons/fa";
 import { AuthContext } from "../providers/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
@@ -67,7 +68,7 @@ const Header = () => {
       {/* Center Navigation */}
       <nav className="hidden md:flex gap-6 text-sm font-medium">
         <Link
-          to="/dashboard/collect-order"
+          to="/dashboard/pos"
           className="hover:underline flex items-center gap-1"
         >
           <FaShoppingCart />
@@ -86,6 +87,13 @@ const Header = () => {
         >
           <FaClipboardList />
           <span>Pending Order</span>
+        </Link>
+           <Link
+          to="/dashboard/tables/view"
+          className="hover:underline flex items-center gap-1"
+        >
+          <FaTable />
+          <span>Table </span>
         </Link>
       </nav>
 
