@@ -1,95 +1,107 @@
-import React, { useContext } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../providers/AuthProvider";
+// src/layouts/Sidebar.js
 
-// import logo from "../../assets/Logo/logo.png";
-import { CiLogout } from "react-icons/ci";
+import React, { useState } from 'react';
+import { Link, useLocation } from "react-router-dom";
+import { MdChevronRight } from "react-icons/md";
 import menuItems from "./MenuItems";
-import "./Sidebar.css";
-import MenuLink from "./MenuLink/MenuLink";
-import { handleLogOut } from "../../utilities/logoutHelper"; 
 import useCompanyHook from "../../Hook/useCompanyHook";
-const Sidebar = ({ isCollapsed }) => {
-  const { logoutUser } = useContext(AuthContext);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const UserRole = "admin"; // Example UserRole for logic
-  const { companies } = useCompanyHook();
 
+// The AccordionItem component remains the same.
+const AccordionItem = ({ item, isSidebarOpen }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const location = useLocation();
 
-  const handleNavigation = (path) => {
-    if (path) navigate(path);
-  };
-
-  return (
-    <div className="relative mt-8">
-      <div
-        className={`sidebar border-r border-gray-400 border-dashed h-dvh overflow-auto pl-4 pr-4 pb-4 poppins text-[#737373] ${
-          isCollapsed ? "w-[80px]" : "w-[270px]"
-        } bg-white shadow-lg transition-all duration-300`}
-      >
-        {/* Logo Section */}
-        <div className="flex flex-col items-center mb-6">
-          {!isCollapsed && <img src={companies[0]?.logo} alt="Logo" className="w-24 h-24 mb-4" />}
-        </div>
-
-        {/* Menu Section */}
-        <nav className="text-base font-normal">
-          <ul>
-            {menuItems(UserRole).map((cat) => (
-              <li key={cat.title} className="mb-2">
-                {cat.list ? (
-                  <div className="collapse bg-gray-50 p-1 pt-3 hover:shadow rounded-xl">
-                    <input
-                      type="checkbox"
-                      id={`collapse-${cat.title}`}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor={`collapse-${cat.title}`}
-                      className="font-medium flex items-center gap-2 cursor-pointer pl-4"
-                    >
-                      {!isCollapsed && cat.icon}
-                      {!isCollapsed && cat.title}
-                    </label>
-                    <div className="collapse-content px-1 pt-2">
-                      {cat.list.map((item) => (
-                        <MenuLink
-                          item={item}
-                          key={item.title}
-                          location={location}
-                          isCollapsed={isCollapsed}
-                        />
-                      ))}
+    if (item.list) {
+        return (
+            <li className="my-1">
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="w-full flex justify-between items-center p-3 rounded-md text-gray-600 hover:bg-gray-200"
+                >
+                    <div className="flex items-center gap-3">
+                        {item.icon}
+                        {isSidebarOpen && <span className="font-medium text-sm">{item.title}</span>}
                     </div>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => handleNavigation(cat.path)}
-                    className="bg-gray-50 p-3 hover:shadow rounded-xl cursor-pointer flex items-center gap-2 pl-4"
-                  >
-                    {cat.icon}
-                    {!isCollapsed && cat.title}
-                  </div>
+                    {isSidebarOpen && <MdChevronRight className={`transition-transform ${isOpen ? 'rotate-90' : ''}`} />}
+                </button>
+                {isOpen && isSidebarOpen && (
+                    <ul className="pl-6 pt-1">
+                        {item.list.map((child) => (
+                            <li key={child.title}>
+                                <Link
+                                    to={child.path}
+                                    className={`flex p-2 my-1 text-sm rounded-md gap-3 items-center transition-colors ${
+                                        location.pathname === child.path
+                                            ? "bg-blue-500 text-white"
+                                            : "text-gray-500 hover:bg-gray-200"
+                                    }`}
+                                >
+                                    {child.icon}
+                                    <span>{child.title}</span>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
                 )}
-              </li>
-            ))}
-          </ul>
-        </nav>
+            </li>
+        );
+    } else {
+        return (
+            <li>
+                <Link
+                    to={item.path}
+                    className={`flex p-3 my-1 rounded-md gap-3 items-center transition-colors ${
+                        location.pathname === item.path
+                            ? "bg-blue-500 text-white"
+                            : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                >
+                    {item.icon}
+                    {isSidebarOpen && <span className="font-medium text-sm">{item.title}</span>}
+                </Link>
+            </li>
+        );
+    }
+};
 
-        {/* Logout Section */}
-        <div className="mt-auto">
-          <button
-            onClick={() => handleLogOut(logoutUser, navigate)}
-            className="w-full p-3 flex items-center justify-center gap-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
-          >
-            <CiLogout size={24} />
-            {!isCollapsed && <span>Log Out</span>}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+
+// FIX APPLIED TO THE MAIN SIDEBAR COMPONENT
+const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
+    const { companies } = useCompanyHook();
+
+    return (
+        <>
+            {/* Mobile Overlay: Appears when the sidebar is open on mobile */}
+            <div
+                onClick={toggleSidebar}
+                className={`fixed inset-0 bg-black/50 z-20 transition-opacity md:hidden ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            ></div>
+
+            {/* Sidebar Container */}
+            <div
+                className={`fixed top-0 left-0 h-full bg-white shadow-lg z-30 transition-all duration-300 flex flex-col
+                    ${isSidebarOpen
+                        ? 'w-64 translate-x-0' // Is OPEN on mobile and desktop
+                        : 'w-64 -translate-x-full md:w-20 md:translate-x-0' // Is CLOSED
+                    }`
+                }
+            >
+                {/* Logo */}
+                <div className="flex items-center justify-center p-8 border-b h-[65px] flex-shrink-0 my-5">
+                    <img src={companies[0]?.logo} alt="Logo" className={`transition-all duration-300 ${isSidebarOpen ? 'w-24' : 'w-10'}`} />
+                </div>
+
+                {/* Menu */}
+                <nav className="flex-1 overflow-y-auto p-2">
+                    <ul>
+                        {menuItems().map((item) => (
+                            <AccordionItem key={item.title} item={item} isSidebarOpen={isSidebarOpen} />
+                        ))}
+                    </ul>
+                </nav>
+            </div>
+        </>
+    );
 };
 
 export default Sidebar;

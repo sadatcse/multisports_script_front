@@ -1,37 +1,51 @@
+// src/layouts/ARoot.js
+
 import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./../../components/Header";
 
-
 const ARoot = () => {
-  const [isMobile, setIsMobile] = useState(false);
+  // State to manage sidebar visibility
+  const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
 
-  // Monitor screen width to determine if it's mobile
+  const toggleSidebar = () => {
+    setSidebarOpen(!isSidebarOpen);
+  };
+
+  // EFFECT: Handle window resizing to show/hide sidebar automatically
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768); // Example breakpoint for mobile
+      // Open on desktop, close on mobile
+      setSidebarOpen(window.innerWidth > 768);
     };
 
-    handleResize(); // Initialize on mount
     window.addEventListener("resize", handleResize);
+    // Initial check
+    handleResize();
 
+    // Cleanup the event listener on component unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
-    <div className="flex">
-      {/* Conditionally render the sidebar */}
-      {!isMobile && (
-        <div className="fixed w-[200px] h-full">
-          <Sidebar />
-        </div>
-      )}
+    <div className="flex h-screen bg-gray-100">
+      <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-      {/* Main content area */}
-      <div className={`${!isMobile ? "ml-[270px]" : "ml-0"} flex-1`}>
-        <Header />
-        <Outlet />
+      <div
+        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+          isSidebarOpen ? "md:ml-64" : "md:ml-20"
+        }`}
+      >
+  
+        <Header 
+          isSidebarOpen={isSidebarOpen} 
+          toggleSidebar={toggleSidebar} 
+        />
+        
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6">
+          <Outlet />
+        </main>
       </div>
     </div>
   );

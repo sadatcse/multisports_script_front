@@ -1,5 +1,4 @@
 import React from "react";
-// Import icons from react-icons
 import { IoRestaurantOutline } from "react-icons/io5"; // Dine-in
 import { BsBag } from "react-icons/bs"; // Takeaway
 import { TbTruckDelivery } from "react-icons/tb"; // Delivery
@@ -15,14 +14,16 @@ const OrderTypeSelectionModal = ({ isOpen, onSelect, onClose }) => {
       {/* Modal Content Box */}
       <div className="bg-white p-8 rounded-lg shadow-xl text-center relative w-full max-w-lg">
         
-        {/* Close Button Box */}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 p-2 text-gray-500 rounded-full hover:bg-gray-200 hover:text-gray-800 transition-colors duration-200"
-          aria-label="Close modal"
-        >
-          <TfiClose size={20} />
-        </button>
+        {/* Close Button Box - Note: onClose is optional here based on UX flow */}
+        {onClose && (
+            <button
+                onClick={onClose}
+                className="absolute top-2 right-2 p-2 text-gray-500 rounded-full hover:bg-gray-200 hover:text-gray-800 transition-colors duration-200"
+                aria-label="Close modal"
+            >
+                <TfiClose size={20} />
+            </button>
+        )}
 
         <h2 className="text-2xl font-bold mb-6">Select Order Type</h2>
         

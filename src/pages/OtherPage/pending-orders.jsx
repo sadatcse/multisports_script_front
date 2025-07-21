@@ -51,7 +51,7 @@ useEffect(() => {
       setIsLoading(false);
     }
   };
-
+console.log(orders);
   const handleEditOrder = (order) => {
     setEditOrder(order);
     setIsModalOpen(true);

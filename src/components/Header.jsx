@@ -1,31 +1,29 @@
-import React, { useContext, useState } from "react";
-import {
-  FaShoppingCart,
-  FaCheckCircle,
-  FaClipboardList,
-  FaUserCircle,
-  FaTable,
-} from "react-icons/fa";
-import { AuthContext } from "../providers/AuthProvider";
+// src/components/Header.js
+
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-import person from "../assets/Raw-Image/Person.jpg";
-import UseAxiosSecure from "../Hook/UseAxioSecure";
+import { FaCheckCircle, FaClipboardList, FaShoppingCart, FaTable, FaUserCircle } from "react-icons/fa";
+import { RiMenuFold4Fill } from "react-icons/ri";
 import Preloader from "./Shortarea/Preloader";
+import person from "../assets/Raw-Image/Person.jpg";
+import {
+  MdMenu,
 
-const Header = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  MdMail,
+  MdNotifications,
+  MdSearch,
+} from "react-icons/md";
+import { AuthContext } from "../providers/AuthProvider";
+import UseAxiosSecure from "../Hook/UseAxioSecure";
 
-  const [products, setProducts] = useState([]);
-   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate(); 
+const Header = ({ isSidebarOpen, toggleSidebar }) => {
+  const [isProfileOpen, setProfileOpen] = useState(false);
+     const [isLoading, setIsLoading] = useState(false);
   const { user, logoutUser,branch  } = useContext(AuthContext);
-  const axiosSecure = UseAxiosSecure();
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+   const [products, setProducts] = useState([]);
+    const axiosSecure = UseAxiosSecure();
+  const navigate = useNavigate();
   const openModal = () => {
     setIsLoading(true);
     setIsModalOpen(true);
@@ -45,27 +43,40 @@ const Header = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
   const handleSignOut = async () => {
-    try {
-      await logoutUser(); // Call the logout function
-      navigate("/"); // Redirect to login page
-    } catch (error) {
-      console.error("Error during sign out:", error);
-    }
+    await logoutUser();
+    navigate("/");
   };
 
-  return (
-    <header className="bg-blue-600 text-white p-4 shadow-lg flex items-center justify-between">
-      {/* Left Menu */}
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <FaClipboardList />
-          <span>COUNTER {user?.counter || "1"}</span>
-        </h1>
-      </div>
+  // Dummy dropdown state. Implement as needed.
+  const [isMailOpen, setMailOpen] = useState(false);
+  const [isNotificationsOpen, setNotificationsOpen] = useState(false);
 
-      {/* Center Navigation */}
+  return (
+    <header className="bg-white shadow-md w-full p-2 flex items-center justify-between z-10">
+      {/* Left side: Toggler, Search */}
+      <div className="flex items-center gap-4">
+        {/* ✨ UPDATED TOGGLE BUTTON ✨ */}
+        <button
+          onClick={toggleSidebar}
+          className="text-gray-600 hover:bg-gray-100 p-2 rounded-full focus:outline-none transition-colors duration-200"
+        >
+          {isSidebarOpen ? (
+            <RiMenuFold4Fill className="text-2xl" />
+          ) : (
+            <MdMenu className="text-2xl" />
+          )}
+        </button>
+
+        <div className="relative hidden md:block">
+          <MdSearch className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
+          <input
+            type="search"
+            placeholder="Search..."
+            className="w-full bg-gray-100 border-none rounded-md pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
       <nav className="hidden md:flex gap-6 text-sm font-medium">
         <Link
           to="/dashboard/pos"
@@ -96,47 +107,99 @@ const Header = () => {
           <span>Table </span>
         </Link>
       </nav>
-
-      {/* User Profile */}
-      <div className="relative">
-        <button
-          onClick={toggleDropdown}
-          className="flex items-center gap-2 focus:outline-none"
-        >
-          <FaUserCircle className="text-2xl" />
-          <span className="hidden md:block">{user?.name || "Guest"}</span>
-        </button>
-
-        {isDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white text-gray-700 rounded-lg shadow-lg z-50">
-            {/* User Info */}
-            <div className="p-4 text-center border-b">
-              <img
-                src={user?.photo || person}
-                alt="Profile"
-                className="w-12 h-12 mx-auto rounded-full"
-              />
-              <h2 className="mt-2 text-sm font-medium">{user?.role || "User"}</h2>
-              <p className="text-xs text-gray-500">{user?.email || "No Email"}</p>
+      {/* Right side: Icons and User Profile */}
+      <div className="flex items-center gap-4">
+        {/* Mail Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setMailOpen(!isMailOpen)}
+            className="text-gray-500 text-2xl relative"
+          >
+            <MdMail />
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-500 text-white text-xs">
+              3
+            </span>
+          </button>
+          {isMailOpen && (
+            <div className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg p-2 z-20">
+              <p className="text-sm text-gray-700 p-2">
+                Mail dropdown content here.
+              </p>
             </div>
-            {/* Dropdown Links */}
-            <div className="flex flex-col text-sm">
-              {/* <button className="py-2 px-4 hover:bg-blue-100 text-left">
-                Profile
-              </button> */}
-               <button
-                onClick={handleSignOut} // Call handleSignOut on click
-                className="py-2 px-4 hover:bg-blue-100 text-left text-red-600"
-              >
-                Sign Out
-              </button>
+          )}
+        </div>
+
+
+
+        {/* Notifications Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setNotificationsOpen(!isNotificationsOpen)}
+            className="text-gray-500 text-2xl relative"
+          >
+            <MdNotifications />
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-white text-xs">
+              4
+            </span>
+          </button>
+          {isNotificationsOpen && (
+            <div className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg p-2 z-20">
+              <p className="text-sm text-gray-700 p-2">
+                Notifications dropdown content here.
+              </p>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+
+        {/* User Profile Dropdown */}
+        <div className="relative">
+   <button
+  onClick={() => setProfileOpen(!isProfileOpen)}
+  className="flex items-center gap-2 focus:outline-none"
+>
+  {user?.photo ? (
+    <img
+      src={user.photo}
+      alt="User"
+      className="w-8 h-8 rounded-full object-cover"
+    />
+  ) : (
+    <FaUserCircle className="text-2xl text-gray-600" />
+  )}
+  <span className="hidden md:block font-medium text-sm text-gray-700">
+    {user?.name || "Guest"}
+  </span>
+</button>
+
+          {isProfileOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white text-gray-700 rounded-lg shadow-lg z-20">
+              <div className="p-4 border-b">
+                <h2 className="text-sm font-medium">
+                  {user?.role || "User"}
+                </h2>
+                <p className="text-xs text-gray-500">
+                  {user?.email || "No Email"}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm">
+                <Link
+                  to="/dashboard/profile"
+                  className="py-2 px-4 hover:bg-blue-100 text-left"
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="py-2 px-4 hover:bg-blue-100 text-left text-red-600"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* Modal for Sell Product */}
-      {isModalOpen && (
+     {isModalOpen && (
 
 <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center animate-fadeIn">
     <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl relative p-8 border border-gray-200">

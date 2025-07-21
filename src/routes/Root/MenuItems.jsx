@@ -1,6 +1,7 @@
+import React from 'react';
 import {
+  // --- Icons from the new structure ---
   MdHome,
-  MdShoppingCart,
   MdPendingActions,
   MdHistory,
   MdReport,
@@ -13,13 +14,15 @@ import {
   MdTableView,
   MdContacts,
   MdCategory,
-  MdInventory, // A better icon for managing products
-  MdSell, // A better icon for sales reports
-  MdGroup, // A better icon for managing multiple users
-  MdTableRestaurant, // A specific icon for tables
-  MdDashboard, // Good for a layout/overview screen
-  MdExtension, // Good for 'Add-ons'
-  MdReceiptLong, // A great icon for order history/finished orders
+  MdInventory,
+  MdSell,
+  MdGroup,
+  MdTableRestaurant,
+  MdDashboard,
+  MdExtension,
+  MdStore,      
+  MdReviews,    
+  MdList,        
 } from "react-icons/md";
 
 const menuItems = () => {
@@ -30,7 +33,6 @@ const menuItems = () => {
       icon: <MdHome className="text-lg" />,
     },
     {
-      // "POS" (Point of Sale) or "New Order" is a more standard term than "Collect Order"
       title: "POS / New Order",
       path: "/dashboard/pos",
       icon: <MdAddShoppingCart className="text-lg" />,
@@ -41,22 +43,33 @@ const menuItems = () => {
       icon: <MdPendingActions className="text-lg" />,
     },
     {
-      // Combined "Finished Order" and "Order History" for clarity
       title: "Order History",
       path: "/dashboard/order-history",
       icon: <MdHistory className="text-lg" />,
     },
     {
-      title: "Customers", // Simpler and more direct
-      path: "/dashboard/customers",
+
+      title: "Customers",
       icon: <MdContacts className="text-lg" />,
+      list: [
+        {
+          title: "Customers List",
+          path: "/dashboard/customers/list",
+          icon: <MdList className="text-lg" />,
+        },
+        {
+          title: "Customers Review",
+          path: "/dashboard/customers/reviews",
+          icon: <MdReviews className="text-lg" />,
+        },
+      ],
     },
     {
       title: "Tables",
-      icon: <MdTableRestaurant className="text-lg" />, // More appropriate icon
+      icon: <MdTableRestaurant className="text-lg" />,
       list: [
         {
-          title: "Table View", // Clearer than "Current Table"
+          title: "Table View",
           path: "/dashboard/tables/view",
           icon: <MdDashboard className="text-lg" />,
         },
@@ -68,6 +81,7 @@ const menuItems = () => {
       ],
     },
     {
+
       title: "Reports",
       icon: <MdReport className="text-lg" />,
       list: [
@@ -79,7 +93,7 @@ const menuItems = () => {
         {
           title: "Product Sales",
           path: "/dashboard/reports/product-sales",
-          icon: <MdSell className="text-lg" />, // More specific than a money icon
+          icon: <MdSell className="text-lg" />,
         },
         {
           title: "Daily Counter Report",
@@ -87,13 +101,15 @@ const menuItems = () => {
           icon: <MdCountertops className="text-lg" />,
         },
         {
-          title: "User Activity", // More descriptive for a report
+          title: "User Activity",
           path: "/dashboard/reports/user-activity",
           icon: <MdPerson className="text-lg" />,
         },
+
       ],
     },
     {
+
       title: "Settings",
       icon: <MdSettings className="text-lg" />,
       list: [
@@ -105,18 +121,23 @@ const menuItems = () => {
         {
           title: "Products",
           path: "/dashboard/settings/products",
-          // MdInventory is more suitable for managing a list of products
           icon: <MdInventory className="text-lg" />,
         },
         {
           title: "Add-ons",
           path: "/dashboard/settings/add-ons",
-          icon: <MdExtension className="text-lg" />, // Perfect icon for add-ons
+          icon: <MdExtension className="text-lg" />,
         },
         {
           title: "Counters",
           path: "/dashboard/settings/counters",
           icon: <MdCountertops className="text-lg" />,
+        },
+        {
+
+          title: "Restaurant List",
+          path: "/dashboard/settings/restaurants",
+          icon: <MdStore className="text-lg" />,
         },
         {
           title: "Tax / VAT",
@@ -133,7 +154,6 @@ const menuItems = () => {
     {
       title: "Staff",
       path: "/dashboard/users",
-      // MdGroup is better for managing multiple users
       icon: <MdGroup className="text-lg" />,
     },
   ];
