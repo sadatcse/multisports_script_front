@@ -7,8 +7,8 @@ import { Helmet } from "react-helmet";
 import useAuth from "../../Hook/useAuth"; 
 
 // Import your assets
-import loginPanelImage from "../../assets/Background/Login.jpg"; // Example path
-import Logo from "../../assets/Logo/login.png"; // Make sure this path is correct
+import loginPanelImage from "../../assets/Background/Login.jpeg"; // Example path
+import Logo from "../../assets/Logo/logo.png"; // Make sure this path is correct
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -52,7 +52,7 @@ const Login = () => {
       }
       setLoading(false);
       toast.success("Login Successful! Welcome back!");
-      navigate("/dashboard/home");
+      navigate("/dashboard/");
 
     } catch (error) {
       setLoading(false);

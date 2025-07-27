@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import { MdChevronRight } from "react-icons/md";
 import menuItems from "./MenuItems";
-import useCompanyHook from "../../Hook/useCompanyHook";
 
+import Logo from "../../assets/Logo/logo.png"
 // The AccordionItem component remains the same.
 const AccordionItem = ({ item, isSidebarOpen }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -67,7 +67,7 @@ const AccordionItem = ({ item, isSidebarOpen }) => {
 
 // FIX APPLIED TO THE MAIN SIDEBAR COMPONENT
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
-    const { companies } = useCompanyHook();
+
 
     return (
         <>
@@ -88,7 +88,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             >
                 {/* Logo */}
                 <div className="flex items-center justify-center p-8 border-b h-[65px] flex-shrink-0 my-5">
-                    <img src={companies[0]?.logo} alt="Logo" className={`transition-all duration-300 ${isSidebarOpen ? 'w-24' : 'w-10'}`} />
+                    <img src={Logo} alt="Logo" className={`transition-all duration-300 ${isSidebarOpen ? 'w-24' : 'w-10'}`} />
                 </div>
 
                 {/* Menu */}
