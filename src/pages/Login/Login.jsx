@@ -71,7 +71,7 @@ const Login = () => {
   return (
     <>
       <Helmet>
-        <title>Login | Restaurant Management System</title>
+        <title>Login | Multisports.com.bd</title>
         <meta name="description" content="Login to your account." />
       </Helmet>
       
@@ -160,12 +160,7 @@ const Login = () => {
                 {loading ? "Logging in..." : "Sign In"}
               </button>
               
-              <p className="text-center text-sm text-gray-600 mt-4">
-                Don't have an account?{" "}
-                <Link to="/register" className="font-medium text-blue-600 hover:text-blue-800">
-                  Create Account
-                </Link>
-              </p>
+ 
             </form>
           </div>
         </div>

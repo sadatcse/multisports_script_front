@@ -1,27 +1,19 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2';
 import { HiOutlineHome, HiPencil, HiTrash, HiPlus } from 'react-icons/hi';
 
 // Import reusable components and hooks
 import UseAxiosSecure from '../../Hook/UseAxioSecure';
-// import { AuthContext } from '../../providers/AuthProvider'; // No longer needed
 import SkeletonLoader from '../../components library/SkeletonLoader';
 import TableControls from '../../components/TableControls';
 import Pagination from './../../components/Pagination';
-import ImageUpload from '../../config/ImageUploadcpanel'; // Assuming this is your image upload component
+// Corrected the import path to match the one in AddProduct for consistency
+import ImageUpload from '../../utilities/ImageUploadcpanel'; 
 
 // --- Modal Component ---
-// For better organization, the modal is defined as a separate component here.
-const UserModal = ({ isOpen, onClose, onSave, user, setUser, isLoading }) => {
+// The modal is updated to receive the image uploader key and setter function.
+const UserModal = ({ isOpen, onClose, onSave, user, setUser, isLoading, setImageUrl, imageUploadKey }) => {
     if (!isOpen) return null;
-
-    const handleImageUpload = (url) => {
-        if (url) {
-            setUser(prev => ({ ...prev, photo: url }));
-        } else {
-            console.error("Image URL is undefined!");
-        }
-    };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
@@ -53,9 +45,14 @@ const UserModal = ({ isOpen, onClose, onSave, user, setUser, isLoading }) => {
                         />
                     )}
                     
-                    <div className="flex items-center space-x-4">
-                        {user.photo && <img src={user.photo} alt="User" className="w-16 h-16 rounded-full object-cover"/>}
-                        <ImageUpload setImageUrl={handleImageUpload} />
+                    {/* Image Upload and Preview Section */}
+                    <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">User Photo</label>
+                        <div className="flex items-center space-x-4">
+                            {user.photo && <img src={user.photo} alt="User Preview" className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"/>}
+                            {/* The ImageUpload component now gets a key to force reset */}
+                            <ImageUpload setImageUrl={setImageUrl} key={imageUploadKey} />
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -104,7 +101,7 @@ const UserModal = ({ isOpen, onClose, onSave, user, setUser, isLoading }) => {
 const Users = () => {
     const axiosSecure = UseAxiosSecure();
 
-    // State for data, pagination, loading, search, and modal
+    // State for data, pagination, loading, search
     const [users, setUsers] = useState([]);
     const [pagination, setPagination] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -117,6 +114,10 @@ const Users = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
+    
+    // --- NEW: State for image handling, adopted from AddProduct ---
+    const [uploadedPhotoUrl, setUploadedPhotoUrl] = useState('');
+    const [imageUploadKey, setImageUploadKey] = useState(Date.now());
 
     const initialFormState = {
         email: "",
@@ -126,15 +127,21 @@ const Users = () => {
         photo: "",
         password: "",
     };
+    
+    // NEW: useEffect to sync the uploaded image URL with the user form state
+    useEffect(() => {
+        if (uploadedPhotoUrl && currentUser) {
+            setCurrentUser(prev => ({ ...prev, photo: uploadedPhotoUrl }));
+        }
+    }, [uploadedPhotoUrl, currentUser]); // Dependency ensures this runs only when needed
 
     // Memoized function to fetch users from the API
     const fetchUsers = useCallback(async (page, limit, search) => {
         setLoading(true);
         setError(null);
         try {
-            // Backend endpoint is assumed to be '/users' to align with controller
             const response = await axiosSecure.get('/user/', {
-                params: { page, limit, search } // Removed 'branch'
+                params: { page, limit, search }
             });
             setUsers(response.data.data);
             setPagination(response.data.pagination);
@@ -144,7 +151,7 @@ const Users = () => {
         } finally {
             setLoading(false);
         }
-    }, [axiosSecure]); // Removed 'branch' from dependencies
+    }, [axiosSecure]);
 
     // useEffect to fetch users with debouncing for search
     useEffect(() => {
@@ -158,12 +165,17 @@ const Users = () => {
 
     const handleOpenModal = (user = null) => {
         setCurrentUser(user ? { ...user } : { ...initialFormState });
+        // Set the initial photo URL state for the modal's preview
+        setUploadedPhotoUrl(user?.photo || '');
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setCurrentUser(null);
+        // Reset image-related state when modal closes
+        setUploadedPhotoUrl('');
+        setImageUploadKey(Date.now()); // Change the key to force reset the ImageUpload component
     };
     
     const handleSaveUser = async () => {
@@ -331,7 +343,10 @@ const Users = () => {
                     user={currentUser}
                     setUser={setCurrentUser}
                     isLoading={isSaving}
-                />
+                    // Pass the new props for image handling to the modal
+                    setImageUrl={setUploadedPhotoUrl}
+                    imageUploadKey={imageUploadKey}
+                 />
             )}
         </div>
     );

@@ -7,7 +7,6 @@ import Users from "../pages/OtherPage/users";
 import PrivateRoot from "./Root/PrivateRoot";
 import Aroot from "./Root/Aroot";
 import ViewProduct from './../pages/Product/ViewProduct';
-import EditProduct from './../pages/Product/EditProduct';
 import AddProduct from './../pages/Product/AddProduct';
 import SearchProduct from '../pages/Product/SearchProduct';
 import Categorie from "../pages/Product/Categorie";
@@ -51,10 +50,7 @@ export const router = createBrowserRouter([
         path: "add",
         element: <PrivateRoot><AddProduct /></PrivateRoot>,
       },
-      {
-        path: "edit",
-        element: <PrivateRoot><EditProduct /></PrivateRoot>,
-      },
+
       {
         path: "view",
         element: <PrivateRoot><ViewProduct /></PrivateRoot>,

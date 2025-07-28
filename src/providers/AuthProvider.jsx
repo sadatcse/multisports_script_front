@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
 import PropTypes from "prop-types";
 
 import useAxiosPublic from "../Hook/useAxiosPublic";
@@ -16,24 +16,6 @@ const AuthProvider = ({ children }) => {
     const storedBranch = localStorage.getItem("authBranch");
     return storedBranch || user?.branch || "teaxo";
   });
-  const [clientIP, setClientIP] = useState(localStorage.getItem("clientIP") || "");
-
-  useEffect(() => {
-    const fetchClientIP = async () => {
-      try {
-        const response = await fetch("https://api64.ipify.org?format=json");
-        const data = await response.json();
-        setClientIP(data.ip);
-        localStorage.setItem("clientIP", data.ip);
-      } catch (error) {
-        console.error("Error fetching IP address:", error);
-      }
-    };
-
-    if (!clientIP) {
-      fetchClientIP();
-    }
-  }, [clientIP]);
 
   const registerUser = async (email, password, name, branch) => {
     setLoading(true);
@@ -43,11 +25,9 @@ const AuthProvider = ({ children }) => {
         password,
         name,
         branch,
-        clientIP,
       });
       return data;
     } catch (error) {
-      console.error("Registration error:", error.response?.data || error.message);
       throw error;
     } finally {
       setLoading(false);
@@ -57,7 +37,7 @@ const AuthProvider = ({ children }) => {
   const loginUser = async (email, password) => {
     setLoading(true);
     try {
-      const response = await axiosSecure.post("/user/login", { email, password, clientIP });
+      const response = await axiosSecure.post("/user/login", { email, password });
       const data = response.data;
 
       setUser(data.user);
@@ -65,10 +45,9 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("authUser", JSON.stringify(data.user));
       localStorage.setItem("authBranch", data.user.branch);
       localStorage.setItem("authToken", data.token);
-    
+      
       return data.user;
     } catch (error) {
-    
       throw error;
     } finally {
       setLoading(false);
@@ -78,14 +57,14 @@ const AuthProvider = ({ children }) => {
   const logoutUser = async () => {
     setLoading(true);
     try {
-      await axiosSecure.post("/user/logout", { email: user.email, clientIP });
+      await axiosSecure.post("/user/logout", { email: user.email });
       setUser(null);
       setBranch(user.branch);
       localStorage.removeItem("authUser");
       localStorage.removeItem("authBranch");
       localStorage.removeItem("authToken");
-      localStorage.removeItem("clientIP");
     } catch (error) {
+      // You might want to handle logout errors, but per your request, logs are removed.
     } finally {
       setLoading(false);
     }
@@ -95,7 +74,6 @@ const AuthProvider = ({ children }) => {
     user,
     loading,
     branch,
-    clientIP,
     registerUser,
     loginUser,
     logoutUser,

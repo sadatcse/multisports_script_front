@@ -1,14 +1,20 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import SkeletonLoader from "../../components library/SkeletonLoader"; // Assuming path is correct
-import UseAxiosSecure from '../../Hook/UseAxioSecure';
-import { HiOutlineHome, HiPencil, HiTrash } from 'react-icons/hi';
+// src/pages/ViewProduct.js
 
-// Import the new reusable components
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import SkeletonLoader from "../../components library/SkeletonLoader";
+import UseAxiosSecure from '../../Hook/UseAxioSecure';
+import useCategories from '../../Hook/Categroie'; // Assuming this hook fetches all categories
+import { HiOutlineHome, HiPencil, HiTrash } from 'react-icons/hi';
+import Swal from 'sweetalert2';
+
+// Import the new and existing components
 import TableControls from '../../components/TableControls';
-import Pagination from './../../components/Pagination';     
+import Pagination from '../../components/Pagination';
+import EditProductModal from '../../components/EditProductModal'; // Import the new modal
+import { AuthContext } from '../../providers/AuthProvider';
 
 const ViewProduct = () => {
-    // State for products, pagination, loading, errors, search, and current page
+    // --- State ---
     const [products, setProducts] = useState([]);
     const [pagination, setPagination] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -16,9 +22,21 @@ const ViewProduct = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-    const axiosSecure = UseAxiosSecure();
+    const { user} = useContext(AuthContext);
+    // --- State for Modal ---
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingProduct, setEditingProduct] = useState(null);
 
-    // Function to fetch products from the API (memoized with useCallback)
+    // --- Hooks ---
+    const axiosSecure = UseAxiosSecure();
+    const { categories: availableCategories, fetchCategories } = useCategories();
+
+    // --- Data Fetching ---
+    // Fetch all categories once for the edit modal dropdown
+    useEffect(() => {
+        fetchCategories({ limit: 999 }); // Fetch all categories
+    }, [fetchCategories]);
+
     const fetchProducts = useCallback(async (page, limit, search) => {
         setLoading(true);
         setError(null);
@@ -34,46 +52,71 @@ const ViewProduct = () => {
         } finally {
             setLoading(false);
         }
-    }, [axiosSecure]); // Dependency added for UseAxiosSecure instance
+    }, [axiosSecure]);
 
-    // useEffect to fetch products with debouncing for search
+    // Debounced search effect
     useEffect(() => {
         const handler = setTimeout(() => {
             fetchProducts(currentPage, itemsPerPage, searchTerm);
-        }, 500); // 500ms delay
+        }, 500);
         return () => clearTimeout(handler);
     }, [searchTerm, currentPage, itemsPerPage, fetchProducts]);
 
-    // Handler for changing the current page
+    // --- Event Handlers ---
     const handlePageChange = (newPage) => {
         if (newPage > 0 && newPage <= (pagination?.totalPages || 1)) {
             setCurrentPage(newPage);
         }
     };
-    const handleEdit = (productId) => {
-        // In a real application, this would navigate to an edit page or open a modal.
-        window.alert(`Edit button clicked for product ID: ${productId}`);
-    };
-
-    // Handler for the delete button click
-    const handleDelete = (productId) => {
-        // In a real application, this would open a confirmation modal before deleting.
-        if (window.confirm(`Are you sure you want to delete product ID: ${productId}?`)) {
-            window.alert(`Confirmed deletion for product ID: ${productId}`);
-            // Here you would typically call an API to delete the product and then refetch the list.
-            // For example: axiosSecure.delete(`/products/${productId}`).then(() => fetchProducts(...));
-        }
-    };
-    // Handler for search input changes
+    
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
-        setCurrentPage(1); // Reset to first page on new search
+        setCurrentPage(1);
     };
 
-    // Handler for changing items per page
     const handleItemsPerPageChange = (event) => {
         setItemsPerPage(Number(event.target.value));
-        setCurrentPage(1); // Reset to first page
+        setCurrentPage(1);
+    };
+
+    // --- Modal and CRUD Handlers ---
+    const handleEdit = (product) => {
+        setEditingProduct(product);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setEditingProduct(null);
+    };
+
+    const handleUpdateSuccess = () => {
+        handleCloseModal();
+        fetchProducts(currentPage, itemsPerPage, searchTerm); // Refetch data
+        Swal.fire('Updated!', 'Product has been updated successfully.', 'success');
+    };
+    
+    const handleDelete = (productId) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await axiosSecure.delete(`/products/delete/${productId}`);
+                    Swal.fire('Deleted!', 'The product has been deleted.', 'success');
+                    // Refetch data to reflect the deletion
+                    fetchProducts(currentPage, itemsPerPage, searchTerm);
+                } catch (err) {
+                    Swal.fire('Error!', 'Failed to delete the product.', 'error');
+                }
+            }
+        });
     };
 
     return (
@@ -86,7 +129,6 @@ const ViewProduct = () => {
             </div>
 
             <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
-                {/* Use the reusable TableControls component */}
                 <TableControls
                     itemsPerPage={itemsPerPage}
                     onItemsPerPageChange={handleItemsPerPageChange}
@@ -96,20 +138,20 @@ const ViewProduct = () => {
 
                 {error && <div className="text-red-500 text-center p-4 bg-red-100 rounded-md">{error}</div>}
 
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto mt-4">
                     <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
-                                <th scope="col" className="px-6 py-3 hidden md:table-cell">Product ID</th>
+                                <th scope="col" className="px-6 py-3 hidden md:table-cell">Product Code</th>
                                 <th scope="col" className="px-6 py-3">Product Name</th>
                                 <th scope="col" className="px-6 py-3">Category</th>
                                 <th scope="col" className="px-6 py-3">Price</th>
-                                <th scope="col" className="px-6 py-3">Actions</th>
+                                <th scope="col" className="px-6 py-3 text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
-                                <SkeletonLoader />
+                                <SkeletonLoader columns={5} />
                             ) : (
                                 products.map(product => (
                                     <tr key={product._id} className="bg-white border-b hover:bg-gray-50">
@@ -119,22 +161,18 @@ const ViewProduct = () => {
                                         <th scope="row" className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap">
                                             <img
                                                 className="w-10 h-10 rounded-full object-cover"
-                                                src={product.productPhoto}
+                                                src={product.productPhoto || 'https://placehold.co/40x40/E2E8F0/4A5568?text=P'}
                                                 alt={product.productName}
                                             />
                                             <div className="ps-3">
                                                 <div className="text-base font-semibold">{product.productName}</div>
                                             </div>
                                         </th>
+                                        <td className="px-6 py-4">{product.productCategory || 'N/A'}</td>
+                                        <td className="px-6 py-4">{product.productPrice ? `৳${product.productPrice.toFixed(2)}` : 'N/A'}</td>
                                         <td className="px-6 py-4">
-                                            {product.productCategory || 'N/A'}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {product.productPrice || 'N/A'}
-                                        </td>
-                                                <td className="px-6 py-4">
-                                            <div className="flex items-center space-x-2">
-                                                <button onClick={() => handleEdit(product._id)} className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors duration-200">
+                                            <div className="flex items-center justify-center space-x-2">
+                                                <button onClick={() => handleEdit(product)} className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors duration-200">
                                                     <HiPencil className="w-5 h-5" />
                                                 </button>
                                                 <button onClick={() => handleDelete(product._id)} className="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors duration-200">
@@ -153,8 +191,7 @@ const ViewProduct = () => {
                     <div className="text-center py-8 text-gray-500">No products found.</div>
                 )}
 
-                {/* Use the reusable Pagination component */}
-                {!loading && pagination && (
+                {!loading && pagination && pagination.totalItems > 0 && (
                     <Pagination
                         currentPage={currentPage}
                         totalPages={pagination.totalPages}
@@ -164,17 +201,19 @@ const ViewProduct = () => {
                     />
                 )}
             </div>
+
+            {/* Render the modal conditionally */}
+            {isModalOpen && (
+                 <EditProductModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    product={editingProduct}
+                    onUpdateSuccess={handleUpdateSuccess}
+                    availableCategories={availableCategories}
+                />
+            )}
         </div>
     );
 };
 
-// The main App component remains unchanged
-const App = () => {
-    return (
-        <div className="bg-gray-100 min-h-screen">
-            <ViewProduct />
-        </div>
-    );
-};
-
-export default App;
+export default ViewProduct;
